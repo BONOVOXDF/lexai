@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Builds
+.next/
+out/
+dist/
+build/
+
+# Env
+.env
+.env.local
+.env*.local
+backend/.env
+frontend/.env.local
+
+# Uploads / runtime data
+backend/uploads/
+frontend/public/uploads/
+data/
+*.db
+*.sqlite3
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Coverage
+coverage/
+htmlcov/
+.pytest_cache/
+
+# Sessao E2E e artefatos TS
+e2e_session.json
+*.tsbuildinfo
+

@@ -1,0 +1,45 @@
+# LEX AI - Backend
+# Python 3.11+
+
+# --- Framework / Web ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# --- Banco de dados ---
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+aiosqlite==0.20.0
+alembic==1.14.0
+
+# --- Redis / Rate limit / Cache ---
+redis==5.2.1
+
+# --- Segurança / Autenticação ---
+pydantic==2.10.4
+pydantic-settings==2.7.0
+email-validator==2.2.0
+PyJWT==2.10.1
+bcrypt==4.2.1
+python-jose[cryptography]==3.3.0
+supabase==2.10.0
+
+# --- IA / RAG ---
+openai==1.59.3
+qdrant-client==1.12.1
+chromadb==0.5.23
+langchain-core==0.3.28
+langchain-openai==0.2.14
+langchain-text-splitters==0.3.4
+
+# --- Documentos / OCR ---
+pypdf==5.1.0
+python-docx==1.1.2
+python-pptx==1.0.1
+pytesseract==0.3.13
+pillow==11.0.0
+reportlab==4.2.5
+
+# --- Utilitários ---
+httpx==0.28.1
+python-dateutil==2.9.0.post0
