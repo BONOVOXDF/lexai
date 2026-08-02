@@ -62,15 +62,27 @@ lex-ai/
 
 - Node.js ≥ 18
 - Python ≥ 3.11
-- Docker + Docker Compose (opcional, para PostgreSQL/Redis/Qdrant)
+- PostgreSQL (recomendado: Neon — banco gerenciado, tier gratuito) ou Docker + Docker Compose
 
-### 2. Subir infraestrutura (Docker)
+### 2. Criar o banco (Neon — recomendado)
+
+1. Crie uma conta gratuita em https://neon.tech e um projeto (região próxima de você, ex.: São Paulo).
+2. Copie a connection string (formato `postgresql://...neon.tech/lexai?sslmode=require`).
+3. No `backend/.env`, defina:
+
+```bash
+DATABASE_URL=postgresql://usuario:senha@ep-nome.region.aws.neon.tech/lexai?sslmode=require
+```
+
+> **Importante:** o SQLAlchemy async espera o driver `asyncpg`. Se a string do Neon vier sem o driver, o `session.py` faz o fallback para SQLite — por isso use o formato acima (pode começar com `postgresql+asyncpg://`).
+
+### 3. Subir infraestrutura (Docker, opcional)
 
 ```bash
 docker compose up -d
 ```
 
-### 3. Backend
+### 4. Backend
 
 ```bash
 cd backend
@@ -94,6 +106,27 @@ npm run dev
 ```
 
 Acesse: http://localhost:3000
+
+### Migração de dados (SQLite → PostgreSQL)
+
+Se você usava SQLite durante o desenvolvimento e quer aproveitar os dados:
+
+```bash
+cd backend
+# 1. Certifique-se de que backend/.env aponta para o PostgreSQL (Neon) e rode o backend
+#    para que as tabelas sejam criadas automaticamente (init_db).
+# 2. Migre os dados do banco de desenvolvimento:
+python scripts/migrate_to_postgres.py
+```
+
+O script cria as tabelas no PostgreSQL, copia os registros preservando os IDs e ajusta as sequences. Para recriar o usuário administrador no banco novo:
+
+```bash
+cd backend
+python scripts/create_admin.py
+```
+
+> Alternativa: se preferir começar limpo (sem os dados de teste), basta apontar a `DATABASE_URL` para o PostgreSQL e rodar `scripts/create_admin.py` — as tabelas são criadas sozinhas na primeira execução.
 
 ---
 
