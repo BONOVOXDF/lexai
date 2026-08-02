@@ -135,8 +135,8 @@ python scripts/create_admin.py
 ### Backend (`.env`)
 
 ```
-DATABASE_URL=postgresql+asyncpg://lexai:lexai@localhost:5432/lexai
-REDIS_URL=redis://localhost:6379/0
+DATABASE_URL=postgresql+asyncpg://usuario:senha@ep-xxxx.region.aws.neon.tech/lexai?ssl=require
+REDIS_URL=rediss://default:<token>@<host>.upstash.io:6379
 SECRET_KEY=...
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 OPENAI_API_KEY=...

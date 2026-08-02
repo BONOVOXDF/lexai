@@ -25,8 +25,8 @@ async def get_redis_client() -> Optional[aioredis.Redis]:
             _client = aioredis.from_url(
                 settings.REDIS_URL,
                 decode_responses=True,
-                socket_connect_timeout=2,
-                socket_timeout=2,
+                socket_connect_timeout=5,
+                socket_timeout=5,
             )
             await _client.ping()
             logger.info("Redis conectado em %s", settings.REDIS_URL)
