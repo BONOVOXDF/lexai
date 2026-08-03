@@ -30,7 +30,7 @@ export function AuthLayout({
         </div>
 
         <Link href="/" className="relative z-10">
-          <Logo />
+          <Logo size="lg" />
           <span className="ml-2 font-display text-lg font-semibold">
             LEX <span className="text-gradient-gold">AI</span>
           </span>
@@ -73,7 +73,7 @@ export function AuthLayout({
       <div className="flex flex-col items-center justify-center bg-background px-6 py-12">
         <div className="mb-8 lg:hidden">
           <Link href="/">
-            <Logo />
+            <Logo size="lg" />
           </Link>
         </div>
         <motion.div

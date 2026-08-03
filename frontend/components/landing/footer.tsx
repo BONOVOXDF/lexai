@@ -30,7 +30,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Logo />
+            <Logo size="xl" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
               A Inteligência Artificial para Advogados. Pesquisa, redação e gestão jurídica
               em uma plataforma segura, moderna e escalável.
