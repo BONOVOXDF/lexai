@@ -48,7 +48,7 @@ class VectorStore:
             logger.info("Qdrant em modo local (path=%s).", settings.QDRANT_PATH)
         else:
             api_key = settings.QDRANT_API_KEY or None
-            self._client = AsyncQdrantClient(url=settings.QDRANT_URL, api_key=api_key)
+            self._client = AsyncQdrantClient(url=settings.QDRANT_URL, api_key=api_key, timeout=15)
             logger.info("Qdrant em modo servidor (%s).", settings.QDRANT_URL)
 
         collections = await self._client.get_collections()
