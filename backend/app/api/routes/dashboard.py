@@ -166,23 +166,29 @@ async def _grafico_por_mes(db: AsyncSession, user_id: int) -> tuple[list[PontoGr
     hoje = date.today()
     seis_meses_atras = (hoje - timedelta(days=180)).replace(day=1)
 
+    # strftime é específico do SQLite; no PostgreSQL usa-se to_char.
+    if db.get_bind().dialect.name == "sqlite":
+        chave_mes = func.strftime("%Y-%m", MovimentoFinanceiro.data)
+    else:
+        chave_mes = func.to_char(MovimentoFinanceiro.data, "YYYY-MM")
+
     receitas = await db.execute(
-        select(func.strftime("%Y-%m", MovimentoFinanceiro.data), func.sum(MovimentoFinanceiro.valor))
+        select(chave_mes, func.sum(MovimentoFinanceiro.valor))
         .where(
             MovimentoFinanceiro.user_id == user_id,
             MovimentoFinanceiro.tipo == TipoMovimento.RECEITA,
             MovimentoFinanceiro.data >= seis_meses_atras,
         )
-        .group_by(func.strftime("%Y-%m", MovimentoFinanceiro.data))
+        .group_by(chave_mes)
     )
     despesas = await db.execute(
-        select(func.strftime("%Y-%m", MovimentoFinanceiro.data), func.sum(MovimentoFinanceiro.valor))
+        select(chave_mes, func.sum(MovimentoFinanceiro.valor))
         .where(
             MovimentoFinanceiro.user_id == user_id,
             MovimentoFinanceiro.tipo == TipoMovimento.DESPESA,
             MovimentoFinanceiro.data >= seis_meses_atras,
         )
-        .group_by(func.strftime("%Y-%m", MovimentoFinanceiro.data))
+        .group_by(chave_mes)
     )
 
     receitas_map = {str(linha[0]): float(linha[1]) for linha in receitas.all()}
