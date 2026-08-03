@@ -58,6 +58,18 @@ class VectorStore:
                 collection_name=settings.QDRANT_COLLECTION,
                 vectors_config=VectorParams(size=settings.EMBEDDING_DIMENSION, distance=Distance.COSINE),
             )
+        # Índices de payload exigidos para filtros por usuário/documento.
+        from qdrant_client.http.models import PayloadSchemaType
+
+        for campo in ("user_id", "fonte_id"):
+            try:
+                await self._client.create_payload_index(
+                    collection_name=settings.QDRANT_COLLECTION,
+                    field_name=campo,
+                    field_schema=PayloadSchemaType.INTEGER,
+                )
+            except Exception as exc:
+                logger.warning("Índice de payload '%s' no Qdrant: %s", campo, exc)
         logger.info("Qdrant inicializado (%s).", settings.QDRANT_COLLECTION)
 
     async def _init_chroma(self) -> None:
