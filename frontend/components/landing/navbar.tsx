@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -38,10 +37,6 @@ export function LandingNavbar() {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/70 to-transparent" />
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" aria-label="LEX AI - Início">
-          <Logo size="lg" />
-        </Link>
-
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <a
@@ -56,7 +51,7 @@ export function LandingNavbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <Link href="/login">
-            <Button variant="ghost">Entrar</Button>
+            <Button variant="gold">Entrar</Button>
           </Link>
           <Link href="/cadastro">
             <Button variant="gold">Começar Agora</Button>
@@ -87,7 +82,7 @@ export function LandingNavbar() {
             ))}
             <div className="mt-2 flex flex-col gap-2">
               <Link href="/login">
-                <Button variant="outline" className="w-full">Entrar</Button>
+                <Button variant="gold" className="w-full">Entrar</Button>
               </Link>
               <Link href="/cadastro">
                 <Button variant="gold" className="w-full">Começar Agora</Button>
