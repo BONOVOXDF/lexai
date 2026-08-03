@@ -11,8 +11,8 @@ interface LogoProps {
 const SIZES = {
   sm: { box: "h-10 w-10", img: "h-10 w-10" },
   md: { box: "h-14 w-14", img: "h-14 w-14" },
-  lg: { box: "h-20 w-20", img: "h-20 w-20" },
-  xl: { box: "h-24 w-24", img: "h-24 w-24" },
+  lg: { box: "h-40 w-40", img: "h-40 w-40" },
+  xl: { box: "h-48 w-48", img: "h-48 w-48" },
 } as const;
 
 /** Logotipo da LEX AI (imagem da marca). */
