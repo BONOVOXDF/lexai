@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Scale } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -16,12 +16,11 @@ export function Logo({ className, iconClassName, textClassName, showText = true,
     <div className={cn("flex items-center gap-2.5", className)}>
       <div
         className={cn(
-          "relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-gold-light to-gold-dark text-navy shadow-gold",
+          "relative flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden",
           iconClassName
         )}
       >
-        <Scale className="h-5 w-5" strokeWidth={2} />
-        <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/20" />
+        <Image src="/logo.png" alt="LEX AI" width={36} height={36} className="h-full w-full object-contain" />
       </div>
       {showText && (
         <div className="leading-none">
