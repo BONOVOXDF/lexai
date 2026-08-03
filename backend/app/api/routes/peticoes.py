@@ -159,6 +159,7 @@ async def generate_peticao(
     return peticao
 
 
+@router.get("/{peticao_id}/export")
 @router.post("/{peticao_id}/export")
 async def export_peticao(
     peticao_id: int,
