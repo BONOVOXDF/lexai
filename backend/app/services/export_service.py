@@ -7,6 +7,7 @@ suportados e sem dependências externas adicionais.
 
 import io
 import logging
+import re
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -78,8 +79,7 @@ def export_pdf(titulo: str, conteudo: str) -> bytes:
         elif bloco.startswith("### "):
             story.append(Paragraph(_escape_html(bloco[4:].strip()), heading_style))
         else:
-            texto = _escape_html(bloco)
-            texto = texto.replace("**", "<b>", 1).replace("**", "</b>", 1)
+            texto = _bold_for_pdf(_escape_html(bloco))
             story.append(Paragraph(texto, body_style))
 
     doc.build(story)
@@ -92,3 +92,9 @@ def _escape_html(texto: str) -> str:
     return (
         texto.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     )
+
+
+def _bold_for_pdf(texto: str) -> str:
+    """Converte pares de `**` em `<b>` (reportlab); remove marcadores não pareados."""
+    texto = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", texto, flags=re.DOTALL)
+    return texto.replace("**", "")
