@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Download, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { api, API_URL } from "@/lib/api";
 import { formatBytes } from "@/lib/utils";
 import type { Documento } from "@/lib/types";
 
@@ -74,7 +74,7 @@ export function DocumentDownloadButton({ documento }: { documento: Documento }) 
     try {
       const token = localStorage.getItem("lexai_access_token") ?? "";
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/documentos/${documento.id}/download`,
+        `${API_URL}/api/documentos/${documento.id}/download`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error("Falha no download");

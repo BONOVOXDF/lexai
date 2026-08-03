@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Markdown } from "@/components/markdown";
-import { api } from "@/lib/api";
+import { api, API_URL } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import type { Peticao } from "@/lib/types";
 
@@ -91,7 +91,7 @@ export default function ContratosPage() {
   const exportar = async (id: number, formato: "word" | "pdf") => {
     const token = localStorage.getItem("lexai_access_token") ?? "";
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/peticoes/${id}/export?formato=${formato}`,
+      `${API_URL}/api/peticoes/${id}/export?formato=${formato}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) return;

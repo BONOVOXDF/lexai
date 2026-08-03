@@ -23,7 +23,7 @@ import { Markdown } from "@/components/markdown";
 import { FileUpload } from "@/components/file-upload";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { cn } from "@/lib/utils";
-import { api, api as apiClient } from "@/lib/api";
+import { api, api as apiClient, API_URL } from "@/lib/api";
 import type { Conversa, ConversaDetail, Mensagem, MensagemAIResult } from "@/lib/types";
 
 interface ChatMessage extends Omit<Mensagem, "fontes"> {
@@ -186,7 +186,7 @@ export default function AssistentePage() {
   const salvarRespostaPdf = async (conversaId: number, mensagemId: number) => {
     const token = localStorage.getItem("lexai_access_token") ?? "";
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/conversas/${conversaId}/mensagens/${mensagemId}/export-pdf`,
+      `${API_URL}/api/conversas/${conversaId}/mensagens/${mensagemId}/export-pdf`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) throw new Error("Falha ao gerar o PDF.");
@@ -203,7 +203,7 @@ export default function AssistentePage() {
     if (!conversaAtiva) return;
     const token = localStorage.getItem("lexai_access_token") ?? "";
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/conversas/${conversaAtiva}/export-pdf`,
+      `${API_URL}/api/conversas/${conversaAtiva}/export-pdf`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) throw new Error("Falha ao gerar o PDF.");
