@@ -51,7 +51,7 @@ export function AuthLayout({
             transition={{ duration: 0.7, delay: 0.1 }}
             className="mt-6 max-w-md font-display text-3xl font-semibold leading-snug"
           >
-            "A Inteligência Artificial <span className="text-gradient-gold">do Advogado</span>"
+            &ldquo;A Inteligência Artificial <span className="text-gradient-gold">do Advogado</span>&rdquo;
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 24 }}
