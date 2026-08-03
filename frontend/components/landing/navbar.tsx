@@ -39,7 +39,7 @@ export function LandingNavbar() {
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link href="/" aria-label="LEX AI - Início">
-          <Logo size="md" />
+          <Logo size="lg" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -47,7 +47,7 @@ export function LandingNavbar() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-navy/80 transition-colors hover:text-gold-dark dark:text-white/85 dark:hover:text-gold-light"
+              className="text-base font-semibold text-gold-dark transition-colors hover:text-gold dark:text-gold-light dark:hover:text-gold"
             >
               {link.label}
             </a>
