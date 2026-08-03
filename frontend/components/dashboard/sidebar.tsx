@@ -63,7 +63,7 @@ function SidebarContent() {
 
       <div className="flex h-16 shrink-0 items-center border-b border-white/10 px-5">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <Logo showText={false} className="gap-0" />
+          <Logo className="gap-0" />
           <span className="font-display text-xl font-semibold tracking-tight">
             LEX <span className="text-gradient-gold">AI</span>
           </span>

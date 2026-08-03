@@ -30,7 +30,7 @@ export function AuthLayout({
         </div>
 
         <Link href="/" className="relative z-10">
-          <Logo showText={false} />
+          <Logo />
           <span className="ml-2 font-display text-lg font-semibold">
             LEX <span className="text-gradient-gold">AI</span>
           </span>
