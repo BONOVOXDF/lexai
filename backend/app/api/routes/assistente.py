@@ -13,6 +13,7 @@ from app.models.user import User
 from app.schemas.conversa import MensagemAIResult, MensagemCreate, MensagemOut
 from app.services.document_service import extract_text, map_tipo, save_upload, validate_upload
 from app.services.rag_service import answer_question, indexar_documento, serialize_sources
+from app.services.rate_limit import check_ia_quota
 from app.models.conversa import Conversa, Mensagem, TipoMensagem
 from app.models.documento import Documento
 
@@ -31,6 +32,7 @@ async def perguntar(
     Responde uma pergunta direta ao Assistente IA usando RAG,
     sem necessariamente criar uma conversa persistida.
     """
+    await check_ia_quota(user)
     resultado = await answer_question(payload.conteudo, user.id)
     return {
         "resposta": resultado["resposta"],
@@ -53,6 +55,7 @@ async def analisar_arquivo(
     O texto é extraído, indexado no vetor do usuário e a IA responde
     à pergunta com base no conteúdo do arquivo.
     """
+    await check_ia_quota(user)
     ext = validate_upload(file)
     caminho, mime_type, tamanho = await save_upload(file, ext)
     texto = await extract_text(caminho, ext)

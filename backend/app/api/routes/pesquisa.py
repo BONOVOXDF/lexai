@@ -25,6 +25,7 @@ from app.schemas.pesquisa import (
 from app.services.rag_service import answer_question
 from app.services.ai_service import generate_embeddings
 from app.services.jurisprudencia_service import pesquisar_jurisprudencia_externa
+from app.services.rate_limit import check_ia_quota
 from app.services.vector_store import vector_store
 
 logger = logging.getLogger(__name__)
@@ -73,6 +74,7 @@ async def pesquisa_ia(
     db: AsyncSession = Depends(get_db),
 ) -> ResultadoPesquisaIA:
     """Pesquisa jurídica por IA com base no conteúdo indexado do usuário e na legislação cadastrada."""
+    await check_ia_quota(user)
     resultado = await answer_question(
         f"Pesquisa jurídica: {payload.termo} "
         f"(filtros: tribunal={payload.tribunal or 'qualquer'}, órgão={payload.orgao or 'qualquer'}). "

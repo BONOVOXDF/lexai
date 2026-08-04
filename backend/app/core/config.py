@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     RATE_LIMIT_ENABLED: bool = True
     RATE_LIMIT_PER_MINUTE: int = 60
 
+    # --- E-mail (Resend) ---
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "LEX AI <onboarding@resend.dev>"
+    APP_URL: str = "http://localhost:3000"
+
     # --- Uploads ---
     UPLOAD_DIR: str = "./uploads"
     MAX_UPLOAD_MB: int = 25

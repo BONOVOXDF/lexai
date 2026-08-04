@@ -22,6 +22,7 @@ from app.schemas.peticao import (
 )
 from app.services.export_service import export_docx, export_pdf
 from app.services.rag_service import gerar_peticao
+from app.services.rate_limit import check_ia_quota
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +133,7 @@ async def generate_peticao(
 
     A petição gerada sempre requer revisão profissional antes do uso.
     """
+    await check_ia_quota(user)
     conteudo = await gerar_peticao(
         tipo_peticao=payload.tipo.value,
         contexto=payload.contexto,

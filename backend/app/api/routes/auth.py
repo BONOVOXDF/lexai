@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_current_user, get_db
+from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -18,6 +19,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
+from app.services.email_service import send_email
 from app.models.user import User
 from app.schemas.user import (
     ForgotPasswordRequest,
@@ -113,8 +115,9 @@ async def forgot_password(payload: ForgotPasswordRequest, db: AsyncSession = Dep
     """
     Solicita recuperação de senha.
 
-    Retorna um token de redefinição para uso com /auth/reset-password.
-    Em produção, o token deve ser enviado por e-mail.
+    Gera um token temporário (expira em 1 hora) e o envia por e-mail
+    com um link para a página de redefinição. O token nunca é retornado
+    na resposta da API.
     """
     result = await db.execute(select(User).where(User.email == payload.email.lower()))
     user = result.scalar_one_or_none()
@@ -123,8 +126,26 @@ async def forgot_password(payload: ForgotPasswordRequest, db: AsyncSession = Dep
         return {"message": "Se o e-mail estiver cadastrado, você receberá instruções de recuperação."}
 
     token = create_access_token(user.id)
-    logger.info("Token de recuperação gerado para %s (enviar por e-mail em produção).", user.email)
-    return {"message": "Se o e-mail estiver cadastrado, você receberá instruções de recuperação.", "reset_token": token}
+    link = f"{settings.APP_URL}/resetar-senha?token={token}"
+    enviado = send_email(
+        to=user.email,
+        subject="Recuperação de senha — LEX AI",
+        html=(
+            f"<p>Olá, <strong>{user.nome}</strong>!</p>"
+            f"<p>Recebemos uma solicitação para redefinir sua senha.</p>"
+            f"<p><a href='{link}' style='display:inline-block;padding:12px 24px;"
+            f"background:#a5762c;color:#fff;text-decoration:none;border-radius:8px;'>"
+            f"Redefinir senha</a></p>"
+            f"<p>O link é válido por <strong>1 hora</strong>. Se você não solicitou "
+            f"esta recuperação, ignore este e-mail.</p>"
+        ),
+        text=f"Para redefinir sua senha, acesse: {link}",
+    )
+    if not enviado:
+        # Em desenvolvimento (sem chave do Resend), loga o link para testes.
+        logger.warning("Link de recuperação de senha (não enviado por e-mail): %s", link)
+
+    return {"message": "Se o e-mail estiver cadastrado, você receberá instruções de recuperação."}
 
 
 @router.post("/reset-password")
