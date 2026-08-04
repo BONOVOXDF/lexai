@@ -7,7 +7,8 @@ import { Logo } from "@/components/logo";
 const LINKS = {
   Produto: [
     { label: "Recursos", href: "#recursos" },
-    { label: "Planos", href: "#planos" },
+    { label: "Preços", href: "/precos" },
+    { label: "Kit gratuito de modelos", href: "/modelos-de-peticao" },
     { label: "Perguntas Frequentes", href: "#faq" },
     { label: "Login", href: "/login" },
   ],

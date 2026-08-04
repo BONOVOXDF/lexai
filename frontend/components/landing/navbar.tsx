@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { label: "Recursos", href: "#recursos" },
-  { label: "Planos", href: "#planos" },
+  { label: "Kit gratuito", href: "/modelos-de-peticao" },
+  { label: "Preços", href: "/precos" },
   { label: "Perguntas", href: "#faq" },
 ];
 

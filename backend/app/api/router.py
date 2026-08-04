@@ -14,6 +14,7 @@ from app.api.routes import (
     documentos,
     financeiro,
     health,
+    leads,
     pesquisa,
     peticoes,
     processos,
@@ -37,3 +38,4 @@ api_router.include_router(agenda.router, prefix="/api")
 api_router.include_router(financeiro.router, prefix="/api")
 api_router.include_router(dashboard.router, prefix="/api")
 api_router.include_router(settings.router, prefix="/api")
+api_router.include_router(leads.router, prefix="/api")

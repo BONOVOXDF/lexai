@@ -186,6 +186,56 @@ def test_dashboard(client):
     assert data["stats"]["total_clientes"] >= 0
 
 
+def test_leads_fluxo(client):
+    # Captura pública (lead magnet) — sem autenticação.
+    r = client.post(
+        "/api/leads",
+        json={"nome": "Advogado Lead", "email": "lead@lexai.com", "origem": "kit-modelos"},
+    )
+    assert r.status_code == 201, r.text
+    assert r.json()["email"] == "lead@lexai.com"
+
+    # Idempotência: mesmo e-mail não cria duplicata.
+    r = client.post(
+        "/api/leads",
+        json={"nome": "Advogado Lead", "email": "lead@lexai.com"},
+    )
+    assert r.status_code == 201
+    assert r.json()["id"] == 1 or r.json()["id"] > 0
+
+    # Marcar download do kit.
+    r = client.post("/api/leads/baixar-kit", json={"email": "lead@lexai.com"})
+    assert r.status_code == 200
+    assert r.json()["ok"] is True
+
+    # Listagem restrita a administradores.
+    r = client.get("/api/leads")
+    assert r.status_code == 401
+
+    # Promove o usuário a superuser para validar a listagem.
+    from app.database.session import async_session_factory
+    from app.models.user import User as UserModel
+    from sqlalchemy import select
+
+    import asyncio
+
+    async def _promote():
+        async with async_session_factory() as db:
+            result = await db.execute(select(UserModel).where(UserModel.email == "advogado@lexai.com"))
+            user = result.scalar_one_or_none()
+            if user is not None:
+                user.is_superuser = True
+                await db.commit()
+
+    asyncio.run(_promote())
+
+    token = _login(client)
+    headers = {"Authorization": f"Bearer {token}"}
+    r = client.get("/api/leads", headers=headers)
+    assert r.status_code == 200, r.text
+    assert any(lead["email"] == "lead@lexai.com" for lead in r.json())
+
+
 def _login(client) -> str:
     r = client.post("/api/auth/login", json={"email": "advogado@lexai.com", "senha": "senha-segura-123"})
     assert r.status_code == 200, r.text
