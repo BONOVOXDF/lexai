@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import { apiError } from "@/lib/utils";
  * Tela de redefinição de senha.
  * Recebe o token de recuperação via query string (?token=...).
  */
-export default function ResetarSenhaPage() {
+function ResetarSenhaForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
 
@@ -129,5 +130,19 @@ export default function ResetarSenhaPage() {
         </Link>
       </p>
     </AuthLayout>
+  );
+}
+
+export default function ResetarSenhaPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Spinner />
+        </div>
+      }
+    >
+      <ResetarSenhaForm />
+    </Suspense>
   );
 }
