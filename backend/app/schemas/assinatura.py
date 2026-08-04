@@ -13,19 +13,24 @@ class AssinaturaCheckoutRequest(BaseModel):
 
 
 class AssinaturaCheckoutResponse(BaseModel):
-    """Link de pagamento do Mercado Pago."""
+    """Dados do pagamento PIX criado no Mercado Pago."""
 
-    init_point: str
-    preapproval_id: str
+    payment_id: str
+    qr_code: str
+    qr_code_base64: str
+    transaction_amount: float
+    status: str
 
 
 class AssinaturaOut(BaseModel):
-    """Situação da assinatura do usuário atual."""
+    """Situação do plano do usuário atual."""
 
     model_config = ConfigDict(from_attributes=True)
 
     plano_atual: str
     status: Optional[str] = None
-    preapproval_id: Optional[str] = None
+    payment_id: Optional[str] = None
+    plano_expira_em: Optional[datetime] = None
     data_aprovacao: Optional[datetime] = None
     data_cancelamento: Optional[datetime] = None
+    precos: Optional[dict[str, float]] = None

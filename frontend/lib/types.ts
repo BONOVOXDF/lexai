@@ -259,12 +259,17 @@ export interface ResultadoPesquisaIA {
 export interface Assinatura {
   plano_atual: string;
   status?: string | null;
-  preapproval_id?: string | null;
+  payment_id?: string | null;
+  plano_expira_em?: string | null;
   data_aprovacao?: string | null;
   data_cancelamento?: string | null;
+  precos?: Record<string, number> | null;
 }
 
 export interface AssinaturaCheckout {
-  init_point: string;
-  preapproval_id: string;
+  payment_id: string;
+  qr_code: string;
+  qr_code_base64: string;
+  transaction_amount: number;
+  status: string;
 }

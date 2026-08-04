@@ -8,6 +8,7 @@ Fornece:
 """
 
 import logging
+from datetime import datetime, timezone
 from typing import AsyncGenerator, Optional
 
 from fastapi import Depends, HTTPException, status
@@ -33,6 +34,18 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
+
+
+async def _aplicar_expiracao_plano(db: AsyncSession, user: User) -> None:
+    """Rebaixa para free automaticamente quando o acesso pago expira."""
+    if user.plano != "free" and user.plano_expira_em is not None:
+        expira = user.plano_expira_em
+        if expira.tzinfo is None:
+            expira = expira.replace(tzinfo=timezone.utc)
+        if expira <= datetime.now(timezone.utc):
+            user.plano = "free"
+            user.plano_expira_em = None
+            await db.commit()
 
 
 async def get_current_user(
@@ -63,6 +76,7 @@ async def get_current_user(
             detail="Usuário não encontrado.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    await _aplicar_expiracao_plano(db, user)
     return user
 
 

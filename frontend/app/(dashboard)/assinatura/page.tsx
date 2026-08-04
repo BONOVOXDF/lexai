@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { BadgeCheck, CreditCard, Lock, PartyPopper, RefreshCcw, XCircle } from "lucide-react";
+import {
+  BadgeCheck,
+  CheckCircle2,
+  Copy,
+  CreditCard,
+  Lock,
+  PartyPopper,
+  QrCode,
+  RefreshCcw,
+  XCircle,
+} from "lucide-react";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,11 +29,12 @@ interface PlanoCard {
   recursos: string[];
 }
 
-const PLANOS: PlanoCard[] = [
+const PRECO_FALLBACK: Record<string, number> = { pro: 97, empresa: 297 };
+
+const PLANOS_BASE: Omit<PlanoCard, "preco">[] = [
   {
     id: "pro",
     nome: "Profissional",
-    preco: 97,
     destaque: true,
     descricao: "Para advogados em pleno crescimento de carteira.",
     recursos: [
@@ -37,7 +48,6 @@ const PLANOS: PlanoCard[] = [
   {
     id: "empresa",
     nome: "Empresa",
-    preco: 297,
     destaque: false,
     descricao: "Para escritórios com múltiplos advogados.",
     recursos: [
@@ -51,17 +61,21 @@ const PLANOS: PlanoCard[] = [
 ];
 
 const STATUS_LABEL: Record<string, { texto: string; variant: "success" | "warning" | "destructive" | "outline" }> = {
-  authorized: { texto: "Assinatura ativa", variant: "success" },
+  approved: { texto: "Pagamento confirmado", variant: "success" },
   pending: { texto: "Aguardando pagamento", variant: "warning" },
-  cancelled: { texto: "Cancelada", variant: "destructive" },
-  paused: { texto: "Pausada", variant: "warning" },
+  cancelled: { texto: "Cancelado", variant: "destructive" },
+  refunded: { texto: "Reembolsado", variant: "destructive" },
+  rejected: { texto: "Pagamento recusado", variant: "destructive" },
+  expired: { texto: "Expirado", variant: "destructive" },
 };
 
 export default function AssinaturaPage() {
   const { user, refresh } = useAuth();
   const [assinatura, setAssinatura] = React.useState<Assinatura | null>(null);
+  const [checkout, setCheckout] = React.useState<AssinaturaCheckout | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [processando, setProcessando] = React.useState(false);
+  const [copiado, setCopiado] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
   const [erro, setErro] = React.useState<string | null>(null);
 
@@ -83,13 +97,32 @@ export default function AssinaturaPage() {
     carregar();
   }, [carregar]);
 
+  // Polling enquanto o pagamento PIX estiver pendente.
+  React.useEffect(() => {
+    if (!checkout) return;
+    const timer = window.setInterval(async () => {
+      try {
+        const data = await api.get<Assinatura>("/api/assinatura");
+        setAssinatura(data);
+        if (data.status === "approved") {
+          setMsg("Pagamento confirmado! Seu plano está ativo.");
+          setCheckout(null);
+          await refresh();
+        }
+      } catch {
+        /* mantém o polling */
+      }
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [checkout, refresh]);
+
   const assinar = async (plano: string) => {
     setProcessando(true);
     setErro(null);
     setMsg(null);
     try {
-      const checkout = await api.post<AssinaturaCheckout>("/api/assinatura/checkout", { plano });
-      window.location.assign(checkout.init_point);
+      const data = await api.post<AssinaturaCheckout>("/api/assinatura/checkout", { plano });
+      setCheckout(data);
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Falha ao iniciar o pagamento.");
     } finally {
@@ -97,17 +130,29 @@ export default function AssinaturaPage() {
     }
   };
 
+  const copiarPix = async () => {
+    if (!checkout) return;
+    try {
+      await navigator.clipboard.writeText(checkout.qr_code);
+      setCopiado(true);
+      window.setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      setErro("Não foi possível copiar o código PIX.");
+    }
+  };
+
   const cancelar = async () => {
-    if (!window.confirm("Deseja cancelar sua assinatura? Seu plano será rebaixado para o gratuito.")) return;
+    if (!window.confirm("Deseja encerrar seu plano? Seu acesso será rebaixado para o gratuito.")) return;
     setProcessando(true);
     setErro(null);
     setMsg(null);
     try {
       await api.post("/api/assinatura/cancelar");
-      setMsg("Assinatura cancelada. Seu plano voltou ao gratuito.");
+      setMsg("Plano encerrado. Seu acesso voltou ao gratuito.");
+      setCheckout(null);
       await carregar();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Falha ao cancelar a assinatura.");
+      setErro(err instanceof Error ? err.message : "Falha ao encerrar o plano.");
     } finally {
       setProcessando(false);
     }
@@ -117,13 +162,16 @@ export default function AssinaturaPage() {
     return <div className="flex justify-center py-24"><Spinner className="h-6 w-6" /></div>;
   }
 
+  const precos = assinatura?.precos ?? PRECO_FALLBACK;
+  const planos: PlanoCard[] = PLANOS_BASE.map((p) => ({ ...p, preco: precos[p.id] ?? PRECO_FALLBACK[p.id] }));
+
   const planoAtual = assinatura?.plano_atual ?? "free";
-  const temAssinatura = planoAtual !== "free";
+  const temPlano = planoAtual !== "free";
   const statusInfo = assinatura?.status ? STATUS_LABEL[assinatura.status] : undefined;
 
   return (
     <>
-      <PageHeader title="Assinatura" description="Gerencie seu plano e pagamento da assinatura." />
+      <PageHeader title="Assinatura" description="Escolha um plano e pague via PIX. O acesso é liberado por 30 dias." />
 
       {msg && (
         <Alert className="mb-4 border-emerald-200 text-emerald-700">
@@ -136,7 +184,47 @@ export default function AssinaturaPage() {
         </Alert>
       )}
 
-      {temAssinatura ? (
+      {checkout ? (
+        <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <QrCode className="h-6 w-6 text-gold-dark" />
+            <h2 className="font-display text-xl font-semibold">Pague com PIX</h2>
+          </div>
+          <p className="mb-5 text-sm text-muted-foreground">
+            Escaneie o QR Code com o app do seu banco ou copie o código PIX. O plano é ativado
+            automaticamente após a confirmação do pagamento.
+          </p>
+          <div className="mb-5 flex justify-center">
+            {checkout.qr_code_base64 ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`data:image/png;base64,${checkout.qr_code_base64}`}
+                alt="QR Code PIX"
+                className="h-56 w-56 rounded-xl border bg-white p-2"
+              />
+            ) : (
+              <div className="flex h-56 w-56 items-center justify-center rounded-xl border bg-muted">
+                <Spinner />
+              </div>
+            )}
+          </div>
+          <div className="mb-5 text-center">
+            <p className="text-sm text-muted-foreground">Valor</p>
+            <p className="text-2xl font-semibold">
+              {(checkout.transaction_amount || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button variant="gold" onClick={copiarPix}>
+              {copiado ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copiado ? "Código copiado" : "Copiar código PIX"}
+            </Button>
+            <Button variant="outline" onClick={() => setCheckout(null)}>
+              Fechar
+            </Button>
+          </div>
+        </div>
+      ) : temPlano ? (
         <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -147,26 +235,32 @@ export default function AssinaturaPage() {
               <Badge variant={statusInfo.variant}>{statusInfo.texto}</Badge>
             ) : (
               <Badge variant="success">
-                <BadgeCheck className="h-3.5 w-3.5" /> Assinatura ativa
+                <BadgeCheck className="h-3.5 w-3.5" /> Acesso ativo
               </Badge>
             )}
           </div>
           <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-gold-dark" /> Cobrança recorrente mensal via Mercado Pago.
+              <Lock className="h-4 w-4 text-gold-dark" /> Pagamento único via PIX, sem cobrança recorrente.
             </li>
-            <li className="flex items-center gap-2">
-              <RefreshCcw className="h-4 w-4 text-gold-dark" /> Cancele quando quiser, sem multa.
-            </li>
+            {assinatura?.plano_expira_em && (
+              <li className="flex items-center gap-2">
+                <RefreshCcw className="h-4 w-4 text-gold-dark" />
+                Acesso válido até{" "}
+                <strong>
+                  {new Date(assinatura.plano_expira_em).toLocaleDateString("pt-BR")}
+                </strong>
+              </li>
+            )}
           </ul>
           <Button variant="destructive" onClick={cancelar} disabled={processando}>
             {processando ? <Spinner /> : <XCircle className="h-4 w-4" />}
-            Cancelar assinatura
+            Encerrar acesso
           </Button>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
-          {PLANOS.map((plano) => (
+          {planos.map((plano) => (
             <div
               key={plano.id}
               className={`flex flex-col rounded-2xl border bg-card p-6 ${
@@ -182,7 +276,7 @@ export default function AssinaturaPage() {
                 <span className="text-3xl font-semibold">
                   {plano.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </span>
-                <span className="text-sm text-muted-foreground">/mês</span>
+                <span className="text-sm text-muted-foreground">/30 dias</span>
               </div>
               <ul className="mb-6 flex-1 space-y-2 text-sm">
                 {plano.recursos.map((recurso) => (

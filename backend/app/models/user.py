@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Boolean, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base, TimestampMixin
@@ -30,6 +30,9 @@ class User(Base, TimestampMixin):
     telefone: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     oab: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     plano: Mapped[str] = mapped_column(String(30), default="free", nullable=False)
+    plano_expira_em: Mapped[Optional[object]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)

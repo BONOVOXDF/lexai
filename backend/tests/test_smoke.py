@@ -248,18 +248,21 @@ def test_assinatura_fluxo(client):
     r = client.get("/api/assinatura", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json()["plano_atual"] == "free"
+    assert r.json()["plano_expira_em"] is None
+    assert r.json()["precos"]["pro"] > 0
 
-    # Webhook com preapproval desconhecido não deve quebrar.
+    # Webhook com payment desconhecido não deve quebrar.
     r = client.post(
         "/api/webhooks/mercadopago",
-        json={"type": "preapproval", "data": {"id": "desconhecido-123"}},
+        json={"type": "payment", "data": {"id": "desconhecido-123"}},
     )
-    assert r.status_code in (200, 502), r.text
+    assert r.status_code == 200
+    assert r.json()["ok"] is True
 
     # Webhook de tipo irrelevante responde ok imediatamente.
     r = client.post(
         "/api/webhooks/mercadopago",
-        json={"type": "payment", "data": {"id": "123"}},
+        json={"type": "preapproval", "data": {"id": "123"}},
     )
     assert r.status_code == 200
     assert r.json()["ok"] is True

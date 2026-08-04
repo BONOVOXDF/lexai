@@ -68,13 +68,14 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "LEX AI <onboarding@resend.dev>"
     APP_URL: str = "http://localhost:3000"
 
-    # --- Mercado Pago (assinaturas) ---
+    # --- Mercado Pago (pagamentos) ---
     MP_ACCESS_TOKEN: str = ""
     MP_PUBLIC_KEY: str = ""
     MP_WEBHOOK_SECRET: str = ""
     BACKEND_URL: str = "http://localhost:8000"
     PLANO_PRO_PRECO: float = 97.0
     PLANO_EMPRESA_PRECO: float = 297.0
+    PLANO_DURACAO_DIAS: int = 30
 
     @property
     def precos_por_plano(self) -> dict[str, float]:
