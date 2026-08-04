@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from app.api.routes import (
     agenda,
     assistente,
+    assinatura,
     auth,
     clientes,
     conversas,
@@ -20,6 +21,7 @@ from app.api.routes import (
     processos,
     settings,
     users,
+    webhooks,
 )
 
 api_router = APIRouter()
@@ -39,3 +41,5 @@ api_router.include_router(financeiro.router, prefix="/api")
 api_router.include_router(dashboard.router, prefix="/api")
 api_router.include_router(settings.router, prefix="/api")
 api_router.include_router(leads.router, prefix="/api")
+api_router.include_router(assinatura.router, prefix="/api")
+api_router.include_router(webhooks.router, prefix="/api")

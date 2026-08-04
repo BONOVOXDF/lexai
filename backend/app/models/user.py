@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
+    from app.models.assinatura import Assinatura
     from app.models.cliente import Cliente
     from app.models.conversa import Conversa
     from app.models.documento import Documento
@@ -48,5 +49,8 @@ class User(Base, TimestampMixin):
         back_populates="usuario", cascade="all, delete-orphan"
     )
     peticoes: Mapped[List["Peticao"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
+    assinaturas: Mapped[List["Assinatura"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )

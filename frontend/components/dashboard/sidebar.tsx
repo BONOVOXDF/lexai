@@ -10,6 +10,7 @@ import {
   FileText,
   FolderOpen,
   Gavel,
+  Gem,
   LayoutDashboard,
   LogOut,
   MessageSquareText,
@@ -43,6 +44,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Agenda", href: "/agenda", icon: Calendar },
   { label: "Documentos", href: "/documentos", icon: FileText },
   { label: "Financeiro", href: "/financeiro", icon: CreditCard },
+  { label: "Assinatura", href: "/assinatura", icon: Gem },
   { label: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
@@ -111,7 +113,13 @@ function SidebarContent() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{user?.nome || "Advogado"}</p>
-            <p className="truncate text-xs text-white/50">{user?.plano === "free" ? "Plano Free" : "Plano Profissional"}</p>
+            <p className="truncate text-xs text-white/50">
+              {user?.plano === "free"
+                ? "Plano Gratuito"
+                : user?.plano === "empresa"
+                  ? "Plano Empresa"
+                  : "Plano Profissional"}
+            </p>
           </div>
           <ShieldCheck className="h-4 w-4 text-gold/70" />
         </div>

@@ -255,3 +255,16 @@ export interface ResultadoPesquisaIA {
   }[];
   precisa_revisao: boolean;
 }
+
+export interface Assinatura {
+  plano_atual: string;
+  status?: string | null;
+  preapproval_id?: string | null;
+  data_aprovacao?: string | null;
+  data_cancelamento?: string | null;
+}
+
+export interface AssinaturaCheckout {
+  init_point: string;
+  preapproval_id: string;
+}

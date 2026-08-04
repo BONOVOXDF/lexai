@@ -4,10 +4,12 @@ from app.database.base import Base
 
 # Importa os modelos para registro no metadata (ordem importa).
 from app.models.agenda import EventoAgenda
+from app.models.assinatura import Assinatura
 from app.models.cliente import Cliente
 from app.models.conversa import Conversa, Mensagem
 from app.models.documento import Documento
 from app.models.financeiro import MovimentoFinanceiro
+from app.models.lead import Lead
 from app.models.peticao import Peticao
 from app.models.processo import Processo
 from app.models.user import User
@@ -23,4 +25,6 @@ __all__ = [
     "Peticao",
     "EventoAgenda",
     "MovimentoFinanceiro",
+    "Lead",
+    "Assinatura",
 ]

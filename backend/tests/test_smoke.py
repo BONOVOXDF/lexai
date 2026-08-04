@@ -236,6 +236,35 @@ def test_leads_fluxo(client):
     assert any(lead["email"] == "lead@lexai.com" for lead in r.json())
 
 
+def test_assinatura_fluxo(client):
+    token = _login(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Sem token do Mercado Pago configurado, o checkout deve falhar com 503.
+    r = client.post("/api/assinatura/checkout", json={"plano": "pro"}, headers=headers)
+    assert r.status_code == 503, r.text
+
+    # Situação da assinatura: usuário recém-registrado está no plano free.
+    r = client.get("/api/assinatura", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["plano_atual"] == "free"
+
+    # Webhook com preapproval desconhecido não deve quebrar.
+    r = client.post(
+        "/api/webhooks/mercadopago",
+        json={"type": "preapproval", "data": {"id": "desconhecido-123"}},
+    )
+    assert r.status_code in (200, 502), r.text
+
+    # Webhook de tipo irrelevante responde ok imediatamente.
+    r = client.post(
+        "/api/webhooks/mercadopago",
+        json={"type": "payment", "data": {"id": "123"}},
+    )
+    assert r.status_code == 200
+    assert r.json()["ok"] is True
+
+
 def _login(client) -> str:
     r = client.post("/api/auth/login", json={"email": "advogado@lexai.com", "senha": "senha-segura-123"})
     assert r.status_code == 200, r.text
