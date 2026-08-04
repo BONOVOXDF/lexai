@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Download, FileText, Clock, ShieldCheck, Sparkles } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,12 +11,6 @@ import { api } from "@/lib/api";
 import { apiError } from "@/lib/utils";
 
 const KIT_URL = "/kit/modelos-de-peticao.docx";
-const BENEFICIOS = [
-  { icon: FileText, titulo: "4 peças essenciais", desc: "Inicial consumerista, contestação trabalhista, embargos e justiça gratuita." },
-  { icon: Clock, titulo: "Prontas para preencher", desc: "Estrutura completa com campos entre colchetes. Economize horas por peça." },
-  { icon: Sparkles, titulo: "Bônus: dica de IA", desc: "Aprenda a gerar a primeira versão de cada peça em 3 minutos no LEX AI." },
-  { icon: ShieldCheck, titulo: "100% gratuito", desc: "Sem cartão de crédito. Baixe e use hoje mesmo." },
-];
 
 export function LeadMagnetForm() {
   const [nome, setNome] = React.useState("");
@@ -131,5 +125,3 @@ export function LeadMagnetForm() {
     </div>
   );
 }
-
-export { BENEFICIOS };
