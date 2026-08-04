@@ -1,54 +1,54 @@
-name: CI/CD
+name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
-  backend-lint-and-test:
-    name: Backend - Lint & Test
+  backend:
+    name: Backend (testes)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-          pip install ruff pytest
-      - name: Lint
-        run: |
-          cd backend
-          ruff check app/ || true
-      - name: Import check
-        run: |
-          cd backend
-          python -c "import app.main; print('OK')"
-      - name: Smoke tests
-        run: |
-          cd backend
-          python -m pytest tests -q
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
 
-  frontend-build:
-    name: Frontend - Build
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Rodar testes
+        run: python -m pytest tests -q
+
+  frontend:
+    name: Frontend (lint + typecheck)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci || npm install
+
+      - name: Instalar dependências
+        run: npm ci
+
       - name: Lint
-        working-directory: frontend
         run: npm run lint
-      - name: Build
-        working-directory: frontend
-        run: npm run build
+
+      - name: Typecheck
+        run: npm run typecheck
