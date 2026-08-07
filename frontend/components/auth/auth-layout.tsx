@@ -59,7 +59,7 @@ export function AuthLayout({
       <div className="flex flex-col items-center justify-center bg-background px-6 py-12">
         <div className="mb-8 lg:hidden">
           <Link href="/">
-            <Logo size="lg" />
+            <Logo size="md" />
           </Link>
         </div>
         <motion.div
