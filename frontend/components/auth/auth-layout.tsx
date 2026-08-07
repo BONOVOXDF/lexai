@@ -2,9 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Scale } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 /**
@@ -29,22 +27,7 @@ export function AuthLayout({
           <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
         </div>
 
-        <Link href="/" className="relative z-10">
-          <Logo size="lg" />
-          <span className="ml-2 font-display text-lg font-semibold">
-            LEX <span className="text-gradient-gold">AI</span>
-          </span>
-        </Link>
-
         <div className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-gold to-gold-dark text-navy shadow-gold"
-          >
-            <Scale className="h-8 w-8" strokeWidth={2} />
-          </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
