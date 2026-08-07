@@ -28,6 +28,9 @@ export function AuthLayout({
         </div>
 
         <div className="relative z-10">
+          <Link href="/" aria-label="LEX AI">
+            <Logo size="md" />
+          </Link>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
