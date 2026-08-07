@@ -29,7 +29,9 @@ interface PlanoCard {
   recursos: string[];
 }
 
-const PRECO_FALLBACK: Record<string, number> = { pro: 97, empresa: 297 };
+const PRECO_FALLBACK: Record<string, number> = { pro: 47, empresa: 147 };
+const PRECO_CHEIO: Record<string, number> = { pro: 97, empresa: 297 };
+const PRE_VENDA_FIM = new Date("2026-08-15T23:59:59-03:00");
 
 const PLANOS_BASE: Omit<PlanoCard, "preco">[] = [
   {
@@ -260,24 +262,36 @@ export default function AssinaturaPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
-          {planos.map((plano) => (
-            <div
-              key={plano.id}
-              className={`flex flex-col rounded-2xl border bg-card p-6 ${
-                plano.destaque ? "border-gold/40 shadow-gold ring-1 ring-gold/20" : ""
-              }`}
-            >
-              <div className="mb-1 flex items-center justify-between">
-                <h2 className="font-display text-lg font-semibold">{plano.nome}</h2>
-                {plano.destaque && <Badge variant="gold">Recomendado</Badge>}
-              </div>
-              <p className="text-sm text-muted-foreground">{plano.descricao}</p>
-              <div className="my-4 flex items-baseline gap-1">
-                <span className="text-3xl font-semibold">
-                  {plano.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                </span>
-                <span className="text-sm text-muted-foreground">/30 dias</span>
-              </div>
+          {planos.map((plano) => {
+            const preVenda = new Date() < PRE_VENDA_FIM;
+            return (
+              <div
+                key={plano.id}
+                className={`relative flex flex-col rounded-2xl border bg-card p-6 ${
+                  plano.destaque ? "border-gold/40 shadow-gold ring-1 ring-gold/20" : ""
+                }`}
+              >
+                {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
+                    Pré-venda
+                  </span>
+                )}
+                <div className="mb-1 flex items-center justify-between">
+                  <h2 className="font-display text-lg font-semibold">{plano.nome}</h2>
+                  {plano.destaque && <Badge variant="gold">Recomendado</Badge>}
+                </div>
+                <p className="text-sm text-muted-foreground">{plano.descricao}</p>
+                <div className="my-4 flex items-baseline gap-2">
+                  <span className="text-3xl font-semibold">
+                    {plano.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </span>
+                  {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
+                    <span className="text-lg font-medium text-muted-foreground line-through">
+                      {(PRECO_CHEIO[plano.id] ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    </span>
+                  )}
+                  <span className="text-sm text-muted-foreground">/30 dias</span>
+                </div>
               <ul className="mb-6 flex-1 space-y-2 text-sm">
                 {plano.recursos.map((recurso) => (
                   <li key={recurso} className="flex items-start gap-2">
@@ -295,7 +309,8 @@ export default function AssinaturaPage() {
                 Assinar {plano.nome}
               </Button>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

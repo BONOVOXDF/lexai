@@ -5,6 +5,7 @@ Utiliza pydantic-settings para carregar variáveis de ambiente com
 tipagem estrita e valores padrão seguros para desenvolvimento.
 """
 
+from datetime import datetime, timezone
 from functools import lru_cache
 from typing import List
 
@@ -77,9 +78,30 @@ class Settings(BaseSettings):
     PLANO_EMPRESA_PRECO: float = 297.0
     PLANO_DURACAO_DIAS: int = 30
 
+    # --- Pré-venda (desconto de lançamento) ---
+    PRE_VENDA_ATE: str = "2026-08-15T23:59:59-03:00"
+    PLANO_PRO_PRECO_PRE_VENDA: float = 47.0
+    PLANO_EMPRESA_PRECO_PRE_VENDA: float = 147.0
+
+    @property
+    def em_pre_venda(self) -> bool:
+        """True enquanto a pré-venda estiver ativa (antes da data limite)."""
+        try:
+            fim = datetime.fromisoformat(self.PRE_VENDA_ATE)
+        except (TypeError, ValueError):
+            return False
+        if fim.tzinfo is None:
+            fim = fim.replace(tzinfo=timezone.utc)
+        return datetime.now(timezone.utc) < fim
+
     @property
     def precos_por_plano(self) -> dict[str, float]:
-        """Preço mensal (R$) por plano assinável."""
+        """Preço (R$) por plano assinável, aplicando o desconto de pré-venda quando ativo."""
+        if self.em_pre_venda:
+            return {
+                "pro": self.PLANO_PRO_PRECO_PRE_VENDA,
+                "empresa": self.PLANO_EMPRESA_PRECO_PRE_VENDA,
+            }
         return {"pro": self.PLANO_PRO_PRECO, "empresa": self.PLANO_EMPRESA_PRECO}
 
     # --- Uploads ---

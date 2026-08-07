@@ -11,7 +11,7 @@ import { Check } from "lucide-react";
 export const metadata: Metadata = {
   title: "Preços e Planos | LEX AI",
   description:
-    "Planos do LEX AI para advogados e escritórios: comece grátis, Profissional por R$ 97/mês ou Escritório por R$ 297/mês. Sem fidelidade, cancele quando quiser.",
+    "Planos do LEX AI para advogados e escritórios: comece grátis, Profissional por R$ 47 ou Escritório por R$ 147 — preços promocionais de lançamento até 15/08/2026. Sem fidelidade, cancele quando quiser.",
 };
 
 const COMPARACAO = [
