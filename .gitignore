@@ -21,6 +21,11 @@ frontend/.env.local
 backend/uploads/
 frontend/public/uploads/
 data/
+!backend/data/
+backend/data/*
+!backend/data/conhecimento/
+backend/data/conhecimento/*
+!backend/data/conhecimento/*.md
 *.db
 *.sqlite3
 

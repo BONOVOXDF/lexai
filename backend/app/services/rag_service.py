@@ -116,10 +116,10 @@ async def answer_question(
     # 1) Gera embedding da pergunta.
     query_embedding = (await generate_embeddings([question]))[0] if vector_store.is_ready else []
 
-    # 2) Busca contexto no banco vetorial (limitado ao usuário).
+    # 2) Busca contexto no banco vetorial (base global + documentos do usuário).
     chunks: List[Dict[str, Any]] = []
     if query_embedding:
-        chunks = await vector_store.search(query_embedding=query_embedding, user_id=user_id, limit=6)
+        chunks = await vector_store.search(query_embedding=query_embedding, user_id=user_id, limit=8)
 
     context = _format_context(chunks)
     system_prompt = (

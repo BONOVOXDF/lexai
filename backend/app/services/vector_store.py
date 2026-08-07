@@ -125,20 +125,26 @@ class VectorStore:
         user_id: int,
         limit: int = 6,
         score_threshold: float = 0.3,
+        include_global: bool = True,
     ) -> List[Dict[str, Any]]:
-        """Busca semântica restrita ao usuário. Retorna trechos e metadados."""
+        """Busca semântica no conteúdo do usuário e na base global (user_id=0)."""
         if not self.is_ready:
             return []
 
         try:
             if self._backend == "qdrant":
-                from qdrant_client.http.models import Filter, FieldCondition, MatchValue
+                from qdrant_client.http.models import (
+                    Filter,
+                    FieldCondition,
+                    MatchAny,
+                )
 
+                ids = [0, user_id] if include_global else [user_id]
                 result = await self._client.query_points(
                     collection_name=settings.QDRANT_COLLECTION,
                     query=query_embedding,
                     query_filter=Filter(
-                        must=[FieldCondition(key="user_id", match=MatchValue(value=user_id))]
+                        must=[FieldCondition(key="user_id", match=MatchAny(any=ids))]
                     ),
                     limit=limit,
                     score_threshold=score_threshold,
@@ -158,25 +164,28 @@ class VectorStore:
                     )
                 return hits
             elif self._backend == "chroma":
-                result = self._chroma_collection.query(
-                    query_embeddings=[query_embedding],
-                    n_results=limit,
-                    where={"user_id": user_id},
-                )
-                hits = []
-                for i, text in enumerate(result["documents"][0]):
-                    meta = result["metadatas"][0][i] or {}
-                    hits.append(
-                        {
-                            "text": text,
-                            "score": result["distances"][0][i],
-                            "tipo": meta.get("tipo", "documento"),
-                            "fonte": meta.get("fonte", "Documento"),
-                            "url": meta.get("url"),
-                            "data": meta.get("data"),
-                        }
+                ids = [0, user_id] if include_global else [user_id]
+                resultados: List[Dict[str, Any]] = []
+                for uid in ids:
+                    result = self._chroma_collection.query(
+                        query_embeddings=[query_embedding],
+                        n_results=limit,
+                        where={"user_id": uid},
                     )
-                return hits
+                    for i, text in enumerate(result["documents"][0]):
+                        meta = result["metadatas"][0][i] or {}
+                        resultados.append(
+                            {
+                                "text": text,
+                                "score": result["distances"][0][i],
+                                "tipo": meta.get("tipo", "documento"),
+                                "fonte": meta.get("fonte", "Documento"),
+                                "url": meta.get("url"),
+                                "data": meta.get("data"),
+                            }
+                        )
+                resultados.sort(key=lambda h: h.get("score", 0), reverse=True)
+                return resultados[:limit]
         except Exception as exc:
             logger.error("Falha na busca vetorial: %s", exc)
             return []

@@ -153,7 +153,7 @@ async def pesquisar_leis(
         if embedding:
             hits = await vector_store.search(embedding, user.id, limit=payload.limite, score_threshold=0.4)
             for hit in hits:
-                if hit.get("tipo") in ("lei", "documento"):
+                if hit.get("tipo") in ("lei", "guia", "sumula", "modelo", "prazo", "documento"):
                     resultados.append(
                         ResultadoPesquisa(
                             titulo=hit.get("fonte", "Documento"),
