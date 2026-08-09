@@ -12,10 +12,19 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_current_user, get_db
+from app.models.cliente import Cliente
 from app.models.documento import Documento
 from app.models.user import User
 from app.schemas.common import MessageResponse, Paginated
-from app.schemas.documento import DocumentoOut, DocumentoPesquisaResult, DocumentoResumoOut, DocumentoUpdate
+from app.schemas.documento import (
+    DocumentoGeradoOut,
+    DocumentoGeradoRequest,
+    DocumentoOut,
+    DocumentoPesquisaResult,
+    DocumentoResumoOut,
+    DocumentoUpdate,
+)
+from app.services import gerador_documentos
 from app.services.document_service import (
     delete_file,
     extract_text,
@@ -220,3 +229,62 @@ async def pesquisar_documentos(
             )
         )
     return resultados
+
+
+@router.get("/modelos")
+async def listar_modelos(
+    user: User = Depends(get_current_user),
+) -> dict:
+    """Lista os modelos de documentos disponíveis para geração."""
+    return {"modelos": gerador_documentos.listar_modelos()}
+
+
+@router.post("/gerar", response_model=DocumentoGeradoOut)
+async def gerar_documento(
+    payload: DocumentoGeradoRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> DocumentoGeradoOut:
+    """Gera um documento preenchido com os dados do cliente e do advogado."""
+    result = await db.execute(
+        select(Cliente).where(Cliente.id == payload.cliente_id, Cliente.user_id == user.id)
+    )
+    cliente = result.scalar_one_or_none()
+    if cliente is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado.")
+
+    try:
+        gerado = gerador_documentos.gerar_documento_texto(cliente, user, payload.modelo)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+    return DocumentoGeradoOut(**gerado)
+
+
+@router.post("/gerar/export")
+async def exportar_documento(
+    payload: DocumentoGeradoRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    """Gera e exporta o documento preenchido em formato .docx."""
+    result = await db.execute(
+        select(Cliente).where(Cliente.id == payload.cliente_id, Cliente.user_id == user.id)
+    )
+    cliente = result.scalar_one_or_none()
+    if cliente is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado.")
+
+    try:
+        conteudo_bytes = gerador_documentos.gerar_documento_docx(cliente, user, payload.modelo)
+        nome_arquivo = f"{payload.modelo.replace(' ', '_')}_{cliente.nome}.docx"
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+
+    from fastapi.responses import Response
+
+    return Response(
+        content=conteudo_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{nome_arquivo}"'},
+    )

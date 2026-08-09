@@ -49,3 +49,18 @@ class DocumentoPesquisaResult(BaseModel):
     nome_original: str
     trecho: str
     score: float
+
+
+class DocumentoGeradoRequest(BaseModel):
+    """Requisição para gerar um documento a partir de um modelo."""
+
+    modelo: str
+    cliente_id: int
+
+
+class DocumentoGeradoOut(BaseModel):
+    """Documento gerado a partir de um modelo preenchido."""
+
+    modelo: str
+    titulo: str
+    conteudo: str

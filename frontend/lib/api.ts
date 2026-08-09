@@ -131,6 +131,29 @@ export const api = {
   patch: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PATCH", body: JSON.stringify(body ?? {}) }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  download: async (path: string, body?: unknown): Promise<Blob> => {
+    const token = getAccessToken();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const response = await fetch(`${API_URL}${path}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body ?? {}),
+    });
+    if (!response.ok) {
+      let message = `Erro ${response.status}`;
+      try {
+        const data = await response.json();
+        if (data?.detail) message = data.detail;
+      } catch {
+        /* corpo não-JSON */
+      }
+      throw new ApiError(response.status, message);
+    }
+    return response.blob();
+  },
 };
 
 export { API_URL, APP_URL };

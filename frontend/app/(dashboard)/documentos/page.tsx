@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Spinner, Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -17,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FileUpload, DocumentDownloadButton } from "@/components/file-upload";
+import { GeradorDocumentos } from "@/components/dashboard/gerador-documentos";
 import { api } from "@/lib/api";
 import { formatBytes, formatDate } from "@/lib/utils";
 import type { Documento } from "@/lib/types";
@@ -92,11 +92,16 @@ export default function DocumentosPage() {
       )}
 
       <FileUpload onUpload={handleUpload} multiple />
-      {enviando && (
-        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Enviando e indexando arquivo…
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {enviando && (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Enviando e indexando arquivo…
+            </>
+          )}
         </div>
-      )}
+        <GeradorDocumentos />
+      </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <Input
