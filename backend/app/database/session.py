@@ -14,6 +14,7 @@ from sqlalchemy.engine import make_url
 
 from app.core.config import settings
 from app.database.base import Base
+from app.database.migracao import garantir_colunas_novas
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,10 @@ async_session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_o
 
 
 async def init_db() -> None:
-    """Cria as tabelas no banco de dados (para ambiente de desenvolvimento)."""
+    """Cria as tabelas no banco de dados e aplica migrações leves."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await garantir_colunas_novas(conn)
     logger.info("Tabelas do banco de dados criadas/verificadas.")
 
 
