@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { AuthLayout } from "@/components/auth/auth-layout";
@@ -12,7 +13,7 @@ import { Alert, AlertDescription, Spinner } from "@/components/ui/alert";
 import { apiError } from "@/lib/utils";
 
 /** Ativação do acesso do cliente no portal (criação de senha). */
-export default function PortalAceitarPage() {
+function AceitarConviteForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
@@ -125,5 +126,19 @@ export default function PortalAceitarPage() {
         </form>
       )}
     </AuthLayout>
+  );
+}
+
+export default function PortalAceitarPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Spinner />
+        </div>
+      }
+    >
+      <AceitarConviteForm />
+    </Suspense>
   );
 }
