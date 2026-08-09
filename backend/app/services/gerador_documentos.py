@@ -28,8 +28,8 @@ class ModeloDocumento:
 
 
 MODELOS: Dict[str, ModeloDocumento] = {
-    "procuração": ModeloDocumento(
-        id="procuração",
+    "procuracao": ModeloDocumento(
+        id="procuracao",
         nome="Procuração Ad Judicia et Extra",
         template=(
             "PROCURAÇÃO AD JUDICIA ET EXTRA\n"
@@ -53,8 +53,8 @@ MODELOS: Dict[str, ModeloDocumento] = {
             "{NOME_CLIENTE} — OUTORGANTE\n"
         ),
     ),
-    "hipossuficiência": ModeloDocumento(
-        id="hipossuficiência",
+    "hipossuficiencia": ModeloDocumento(
+        id="hipossuficiencia",
         nome="Declaração de Hipossuficiência",
         template=(
             "DECLARAÇÃO DE HIPOSSUFICIÊNCIA\n"
@@ -75,8 +75,8 @@ MODELOS: Dict[str, ModeloDocumento] = {
             "{NOME_CLIENTE} — DECLARANTE\n"
         ),
     ),
-    "honorários": ModeloDocumento(
-        id="honorários",
+    "honorarios": ModeloDocumento(
+        id="honorarios",
         nome="Contrato de Prestação de Serviços Advocatícios",
         template=(
             "CONTRATO DE PRESTAÇÃO DE SERVIÇOS ADVOCATÍCIOS\n"
