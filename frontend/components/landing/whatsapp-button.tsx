@@ -1,6 +1,6 @@
 "use client";
 
-const WHATSAPP_NUMERO = "5511999999999"; // substitua pelo número real do escritório
+const WHATSAPP_NUMERO = "5561995677033";
 const MENSAGEM = "Olá! Vim pelo site do LEX AI e gostaria de uma demonstração.";
 
 /** Botão flutuante do WhatsApp, fixo no canto inferior direito. */
