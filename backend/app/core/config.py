@@ -69,6 +69,9 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "LEX AI <onboarding@resend.dev>"
     APP_URL: str = "http://localhost:3000"
 
+    # --- Alerta diário de prazos ---
+    ALERTA_PRAZOS_HABILITADO: bool = True
+
     # --- Mercado Pago (pagamentos) ---
     MP_ACCESS_TOKEN: str = ""
     MP_PUBLIC_KEY: str = ""
