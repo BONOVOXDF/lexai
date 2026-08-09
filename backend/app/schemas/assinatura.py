@@ -34,3 +34,8 @@ class AssinaturaOut(BaseModel):
     data_aprovacao: Optional[datetime] = None
     data_cancelamento: Optional[datetime] = None
     precos: Optional[dict[str, float]] = None
+    trial_habilitado: bool = False
+    trial_usado: bool = False
+    trial_ativo: bool = False
+    trial_dias: int = 14
+    trial_dias_restantes: Optional[int] = None

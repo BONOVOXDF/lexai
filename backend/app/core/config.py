@@ -86,6 +86,10 @@ class Settings(BaseSettings):
     PLANO_PRO_PRECO_PRE_VENDA: float = 47.0
     PLANO_EMPRESA_PRECO_PRE_VENDA: float = 147.0
 
+    # --- Teste gratuito ---
+    TRIAL_HABILITADO: bool = True
+    TRIAL_DIAS: int = 14
+
     @property
     def em_pre_venda(self) -> bool:
         """True enquanto a pré-venda estiver ativa (antes da data limite)."""

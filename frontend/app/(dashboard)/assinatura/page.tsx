@@ -6,10 +6,12 @@ import {
   CheckCircle2,
   Copy,
   CreditCard,
+  Gift,
   Lock,
   PartyPopper,
   QrCode,
   RefreshCcw,
+  Rocket,
   XCircle,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -160,6 +162,22 @@ export default function AssinaturaPage() {
     }
   };
 
+  const iniciarTrial = async () => {
+    setProcessando(true);
+    setErro(null);
+    setMsg(null);
+    try {
+      await api.post("/api/assinatura/trial");
+      setMsg("Teste gratuito ativado! Você tem acesso completo por 14 dias.");
+      await carregar();
+      await refresh();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Falha ao iniciar o teste gratuito.");
+    } finally {
+      setProcessando(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center py-24"><Spinner className="h-6 w-6" /></div>;
   }
@@ -168,12 +186,72 @@ export default function AssinaturaPage() {
   const planos: PlanoCard[] = PLANOS_BASE.map((p) => ({ ...p, preco: precos[p.id] ?? PRECO_FALLBACK[p.id] }));
 
   const planoAtual = assinatura?.plano_atual ?? "free";
-  const temPlano = planoAtual !== "free";
+  const temPlano = planoAtual !== "free" && planoAtual !== "trial";
+  const trialAtivo = assinatura?.trial_ativo === true;
+  const trialDisponivel =
+    assinatura?.trial_habilitado === true && assinatura?.trial_usado !== true && planoAtual === "free";
+  const trialUsado = assinatura?.trial_usado === true;
+  const trialDias = assinatura?.trial_dias ?? 14;
+  const diasRestantes = assinatura?.trial_dias_restantes ?? trialDias;
   const statusInfo = assinatura?.status ? STATUS_LABEL[assinatura.status] : undefined;
+
+  const planosGrid = (
+    <div className="grid gap-6 md:grid-cols-2">
+      {planos.map((plano) => {
+        const preVenda = new Date() < PRE_VENDA_FIM;
+        return (
+          <div
+            key={plano.id}
+            className={`relative flex flex-col rounded-2xl border bg-card p-6 ${
+              plano.destaque ? "border-gold/40 shadow-gold ring-1 ring-gold/20" : ""
+            }`}
+          >
+            {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
+                Pré-venda
+              </span>
+            )}
+            <div className="mb-1 flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold">{plano.nome}</h2>
+              {plano.destaque && <Badge variant="gold">Recomendado</Badge>}
+            </div>
+            <p className="text-sm text-muted-foreground">{plano.descricao}</p>
+            <div className="my-4 flex items-baseline gap-2">
+              <span className="text-3xl font-semibold">
+                {plano.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </span>
+              {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
+                <span className="text-lg font-medium text-muted-foreground line-through">
+                  {(PRECO_CHEIO[plano.id] ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </span>
+              )}
+              <span className="text-sm text-muted-foreground">/30 dias</span>
+            </div>
+            <ul className="mb-6 flex-1 space-y-2 text-sm">
+              {plano.recursos.map((recurso) => (
+                <li key={recurso} className="flex items-start gap-2">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
+                  {recurso}
+                </li>
+              ))}
+            </ul>
+            <Button
+              variant={plano.destaque ? "gold" : "default"}
+              onClick={() => assinar(plano.id)}
+              disabled={processando}
+            >
+              {processando ? <Spinner /> : <CreditCard className="h-4 w-4" />}
+              Assinar {plano.nome}
+            </Button>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <>
-      <PageHeader title="Assinatura" description="Escolha um plano e pague via PIX. O acesso é liberado por 30 dias." />
+      <PageHeader title="Assinatura" description="Teste grátis por 14 dias ou escolha um plano e pague via PIX." />
 
       {msg && (
         <Alert className="mb-4 border-emerald-200 text-emerald-700">
@@ -226,6 +304,43 @@ export default function AssinaturaPage() {
             </Button>
           </div>
         </div>
+      ) : trialAtivo ? (
+        <>
+          <div className="mx-auto max-w-2xl rounded-2xl border bg-gradient-to-b from-gold-light/40 to-transparent p-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Rocket className="h-6 w-6 text-gold-dark" />
+                <h2 className="font-display text-xl font-semibold">Teste gratuito ativo</h2>
+              </div>
+              <Badge variant="gold">{diasRestantes} dia{diasRestantes !== 1 ? "s" : ""} restante{diasRestantes !== 1 ? "s" : ""}</Badge>
+            </div>
+            <ul className="mb-6 space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 text-gold-dark" />
+                Acesso completo a todas as funcionalidades do plano Profissional.
+              </li>
+              {assinatura?.plano_expira_em && (
+                <li className="flex items-center gap-2">
+                  <RefreshCcw className="h-4 w-4 text-gold-dark" />
+                  Teste válido até{" "}
+                  <strong>
+                    {new Date(assinatura.plano_expira_em).toLocaleDateString("pt-BR")}
+                  </strong>
+                </li>
+              )}
+              <li className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-gold-dark" /> Sem cartão de crédito. Você não será cobrado.
+              </li>
+            </ul>
+          </div>
+          <div className="mt-10">
+            <div className="mb-4 flex items-center gap-2">
+              <Gift className="h-5 w-5 text-gold-dark" />
+              <h2 className="font-display text-lg font-semibold">Garanta o acesso antes do fim do teste</h2>
+            </div>
+            {planosGrid}
+          </div>
+        </>
       ) : temPlano ? (
         <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -261,57 +376,32 @@ export default function AssinaturaPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          {planos.map((plano) => {
-            const preVenda = new Date() < PRE_VENDA_FIM;
-            return (
-              <div
-                key={plano.id}
-                className={`relative flex flex-col rounded-2xl border bg-card p-6 ${
-                  plano.destaque ? "border-gold/40 shadow-gold ring-1 ring-gold/20" : ""
-                }`}
-              >
-                {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
-                    Pré-venda
-                  </span>
-                )}
-                <div className="mb-1 flex items-center justify-between">
-                  <h2 className="font-display text-lg font-semibold">{plano.nome}</h2>
-                  {plano.destaque && <Badge variant="gold">Recomendado</Badge>}
-                </div>
-                <p className="text-sm text-muted-foreground">{plano.descricao}</p>
-                <div className="my-4 flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold">
-                    {plano.preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </span>
-                  {preVenda && (PRECO_CHEIO[plano.id] ?? 0) > plano.preco && (
-                    <span className="text-lg font-medium text-muted-foreground line-through">
-                      {(PRECO_CHEIO[plano.id] ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                    </span>
-                  )}
-                  <span className="text-sm text-muted-foreground">/30 dias</span>
-                </div>
-              <ul className="mb-6 flex-1 space-y-2 text-sm">
-                {plano.recursos.map((recurso) => (
-                  <li key={recurso} className="flex items-start gap-2">
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
-                    {recurso}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                variant={plano.destaque ? "gold" : "default"}
-                onClick={() => assinar(plano.id)}
-                disabled={processando}
-              >
-                {processando ? <Spinner /> : <CreditCard className="h-4 w-4" />}
-                Assinar {plano.nome}
+        <>
+          {trialDisponivel && (
+            <div className="mx-auto max-w-2xl rounded-2xl border bg-gradient-to-b from-gold-light/40 to-transparent p-6 text-center">
+              <Rocket className="mx-auto h-8 w-8 text-gold-dark" />
+              <h2 className="mt-3 font-display text-2xl font-semibold">
+                Experimente grátis por {trialDias} dias
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                Acesso completo a todas as funcionalidades, sem cartão de crédito e sem
+                compromisso. Você escolhe depois se quer assinar.
+              </p>
+              <Button variant="gold" size="lg" className="mt-5" onClick={iniciarTrial} disabled={processando}>
+                {processando ? <Spinner /> : <Gift className="h-4 w-4" />}
+                Começar teste gratuito
               </Button>
             </div>
-            );
-          })}
-        </div>
+          )}
+          {trialUsado && !trialDisponivel && (
+            <Alert className="mb-4">
+              <AlertDescription>
+                Seu período de teste gratuito terminou. Escolha um plano para continuar usando o LEX AI.
+              </AlertDescription>
+            </Alert>
+          )}
+          {planosGrid}
+        </>
       )}
 
       <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

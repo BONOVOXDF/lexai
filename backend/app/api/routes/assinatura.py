@@ -7,7 +7,8 @@ Rotas de assinatura (pagamento PIX via Mercado Pago).
 """
 
 import logging
-from datetime import datetime, timezone
+import math
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,6 +30,8 @@ from app.services.mercadopago import MercadoPagoError
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/assinatura", tags=["Assinatura"])
+
+PLANOS_PAGOS = {"pro", "empresa"}
 
 
 def _agora_utc() -> datetime:
@@ -105,13 +108,18 @@ async def criar_checkout(
     )
 
 
-@router.get("", response_model=AssinaturaOut)
-async def situacao_assinatura(
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-) -> AssinaturaOut:
-    """Retorna a situação do plano do usuário atual."""
-    assinatura = await _ultima_assinatura(db, user.id)
+def _montar_situacao(user: User, assinatura: Optional[Assinatura]) -> AssinaturaOut:
+    """Monta a situação do plano do usuário, incluindo o teste gratuito."""
+    agora = _agora_utc()
+    trial_ativo = user.plano == "trial" and user.plano_expira_em is not None
+    dias_restantes: Optional[int] = None
+    if trial_ativo:
+        expira = _normalizar(user.plano_expira_em)
+        if expira is not None and expira > agora:
+            dias_restantes = max(1, math.ceil((expira - agora).total_seconds() / 86400))
+        else:
+            trial_ativo = False
+
     return AssinaturaOut(
         plano_atual=user.plano,
         status=assinatura.status if assinatura else None,
@@ -120,7 +128,58 @@ async def situacao_assinatura(
         data_aprovacao=assinatura.data_aprovacao if assinatura else None,
         data_cancelamento=assinatura.data_cancelamento if assinatura else None,
         precos=settings.precos_por_plano,
+        trial_habilitado=settings.TRIAL_HABILITADO,
+        trial_usado=user.trial_usado,
+        trial_ativo=trial_ativo,
+        trial_dias=settings.TRIAL_DIAS,
+        trial_dias_restantes=dias_restantes,
     )
+
+
+@router.post("/trial", response_model=AssinaturaOut)
+async def ativar_trial(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> AssinaturaOut:
+    """Ativa o período de teste gratuito de 14 dias (uma única vez por conta)."""
+    if not settings.TRIAL_HABILITADO:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="O teste gratuito não está disponível no momento.",
+        )
+    if user.trial_usado:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Você já utilizou o período de teste gratuito.",
+        )
+
+    existente = await _ultima_assinatura(db, user.id)
+    if existente is not None and existente.status == "approved":
+        validade = _normalizar(existente.validade_ate)
+        if validade is not None and validade > _agora_utc():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Você já possui um plano ativo.",
+            )
+
+    agora = _agora_utc()
+    user.plano = "trial"
+    user.plano_expira_em = agora + timedelta(days=settings.TRIAL_DIAS)
+    user.trial_iniciado_em = agora
+    user.trial_usado = True
+    await db.commit()
+
+    return _montar_situacao(user, await _ultima_assinatura(db, user.id))
+
+
+@router.get("", response_model=AssinaturaOut)
+async def situacao_assinatura(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> AssinaturaOut:
+    """Retorna a situação do plano do usuário atual."""
+    assinatura = await _ultima_assinatura(db, user.id)
+    return _montar_situacao(user, assinatura)
 
 
 @router.post("/cancelar")

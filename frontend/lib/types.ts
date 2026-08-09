@@ -322,6 +322,11 @@ export interface Assinatura {
   data_aprovacao?: string | null;
   data_cancelamento?: string | null;
   precos?: Record<string, number> | null;
+  trial_habilitado?: boolean;
+  trial_usado?: boolean;
+  trial_ativo?: boolean;
+  trial_dias?: number;
+  trial_dias_restantes?: number | null;
 }
 
 export interface AssinaturaCheckout {

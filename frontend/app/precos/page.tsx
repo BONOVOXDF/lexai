@@ -11,7 +11,7 @@ import { Check } from "lucide-react";
 export const metadata: Metadata = {
   title: "Preços e Planos | LEX AI",
   description:
-    "Planos do LEX AI para advogados e escritórios: comece grátis, Profissional por R$ 47 ou Escritório por R$ 147 — preços promocionais de lançamento até 15/08/2026. Sem fidelidade, cancele quando quiser.",
+    "Planos do LEX AI para advogados e escritórios: 14 dias grátis, Profissional por R$ 47 ou Escritório por R$ 147 — preços promocionais de lançamento até 15/08/2026. Sem fidelidade, cancele quando quiser.",
 };
 
 const COMPARACAO = [
@@ -45,6 +45,10 @@ export default function PrecosPage() {
               primeiro prazo perdido por causa da plataforma vale o ano inteiro — garantia
               incondicional de 7 dias.
             </p>
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-sm font-medium text-gold-dark dark:text-gold">
+              <Check className="h-4 w-4" />
+              14 dias grátis para testar, sem cartão de crédito
+            </div>
           </Reveal>
         </section>
 

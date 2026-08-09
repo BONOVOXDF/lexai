@@ -268,6 +268,32 @@ def test_assinatura_fluxo(client):
     assert r.json()["ok"] is True
 
 
+def test_trial_fluxo(client):
+    token = _login(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Ativa o teste gratuito de 14 dias.
+    r = client.post("/api/assinatura/trial", headers=headers)
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["plano_atual"] == "trial"
+    assert data["trial_ativo"] is True
+    assert data["trial_usado"] is True
+    assert data["trial_dias"] == 14
+    assert data["trial_dias_restantes"] == 14
+    assert data["plano_expira_em"] is not None
+
+    # Não é possível ativar duas vezes.
+    r = client.post("/api/assinatura/trial", headers=headers)
+    assert r.status_code == 409, r.text
+
+    # A situação da assinatura reflete o trial ativo.
+    r = client.get("/api/assinatura", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["trial_ativo"] is True
+    assert r.json()["plano_atual"] == "trial"
+
+
 def _login(client) -> str:
     r = client.post("/api/auth/login", json={"email": "advogado@lexai.com", "senha": "senha-segura-123"})
     assert r.status_code == 200, r.text

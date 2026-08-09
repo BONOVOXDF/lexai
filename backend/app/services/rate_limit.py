@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 # Limites de chamadas de IA por minuto, conforme o plano do usuário.
 PLANO_LIMITES_IA: dict[str, int] = {
     "free": 5,
+    "trial": 30,
     "pro": 30,
     "empresa": 60,
 }

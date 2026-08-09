@@ -34,6 +34,10 @@ class User(Base, TimestampMixin):
     plano_expira_em: Mapped[Optional[object]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    trial_iniciado_em: Mapped[Optional[object]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    trial_usado: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
