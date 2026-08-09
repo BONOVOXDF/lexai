@@ -9,6 +9,7 @@ from app.models.cliente import Cliente
 from app.models.conversa import Conversa, Mensagem
 from app.models.documento import Documento
 from app.models.financeiro import MovimentoFinanceiro
+from app.models.intimacao import Intimacao
 from app.models.lead import Lead
 from app.models.peticao import Peticao
 from app.models.portal_acesso import PortalAcesso
@@ -29,4 +30,5 @@ __all__ = [
     "Lead",
     "Assinatura",
     "PortalAcesso",
+    "Intimacao",
 ]

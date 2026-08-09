@@ -13,6 +13,7 @@ from app.database.base import Base, TimestampMixin
 if TYPE_CHECKING:
     from app.models.cliente import Cliente
     from app.models.documento import Documento
+    from app.models.intimacao import Intimacao
     from app.models.user import User
 
 
@@ -50,5 +51,8 @@ class Processo(Base, TimestampMixin):
     usuario: Mapped["User"] = relationship(back_populates="processos")
     cliente: Mapped[Optional["Cliente"]] = relationship(back_populates="processos")
     documentos: Mapped[List["Documento"]] = relationship(
+        back_populates="processo", cascade="all, delete-orphan"
+    )
+    intimacoes: Mapped[List["Intimacao"]] = relationship(
         back_populates="processo", cascade="all, delete-orphan"
     )

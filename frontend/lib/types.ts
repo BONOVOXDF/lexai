@@ -109,6 +109,23 @@ export interface PortalEvento {
   processo_id?: number | null;
 }
 
+export interface Intimacao {
+  id: number;
+  user_id: number;
+  processo_id?: number | null;
+  cliente_id?: number | null;
+  cliente_nome?: string | null;
+  numero_processo: string;
+  tribunal?: string | null;
+  orgao?: string | null;
+  tipo: string;
+  data_publicacao?: string | null;
+  prazo?: string | null;
+  descricao?: string | null;
+  link?: string | null;
+  created_at: string;
+}
+
 export type TipoDocumento = "pdf" | "docx" | "imagem" | "texto" | "pptx";
 
 export interface Documento {

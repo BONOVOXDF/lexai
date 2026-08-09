@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from app.models.cliente import Cliente
     from app.models.conversa import Conversa
     from app.models.documento import Documento
+    from app.models.intimacao import Intimacao
     from app.models.peticao import Peticao
     from app.models.processo import Processo
 
@@ -55,5 +56,8 @@ class User(Base, TimestampMixin):
         back_populates="usuario", cascade="all, delete-orphan"
     )
     assinaturas: Mapped[List["Assinatura"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
+    intimacoes: Mapped[List["Intimacao"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )
