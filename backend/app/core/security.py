@@ -59,6 +59,20 @@ def create_refresh_token(user_id: int) -> str:
     return _create_token(user_id, "refresh", settings.REFRESH_TOKEN_EXPIRE_MINUTES)
 
 
+def create_portal_access_token(cliente_id: int, advogado_user_id: int) -> str:
+    """Gera um access token para o acesso de um cliente ao portal."""
+    now = datetime.now(timezone.utc)
+    payload: Dict[str, Any] = {
+        "sub": str(cliente_id),
+        "type": "access",
+        "tipo_conta": "portal",
+        "advogado_id": str(advogado_user_id),
+        "iat": now,
+        "exp": now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
 def decode_token(token: str, expected_type: str = "access") -> Optional[Dict[str, Any]]:
     """
     Decodifica e valida um token JWT.

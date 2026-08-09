@@ -11,6 +11,7 @@ from app.database.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.documento import Documento
+    from app.models.portal_acesso import PortalAcesso
     from app.models.processo import Processo
     from app.models.user import User
 
@@ -32,6 +33,9 @@ class Cliente(Base, TimestampMixin):
     anotacoes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     usuario: Mapped["User"] = relationship(back_populates="clientes")
+    portal_acesso: Mapped[Optional["PortalAcesso"]] = relationship(
+        back_populates="cliente", cascade="all, delete-orphan", uselist=False
+    )
     processos: Mapped[List["Processo"]] = relationship(
         back_populates="cliente", cascade="all, delete-orphan"
     )

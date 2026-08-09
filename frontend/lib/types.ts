@@ -82,6 +82,33 @@ export interface PrazoKanbanItem {
 
 export type ColunasPrazos = Record<string, PrazoKanbanItem[]>;
 
+export interface PortalProcesso {
+  id: number;
+  numero: string;
+  tribunal?: string | null;
+  classe?: string | null;
+  vara?: string | null;
+  comarca?: string | null;
+  status: StatusProcesso;
+  prazo?: string | null;
+  observacoes?: string | null;
+  created_at: string;
+}
+
+export interface PortalEvento {
+  id: number;
+  titulo: string;
+  tipo: string;
+  descricao?: string | null;
+  data_inicio: string;
+  hora_inicio?: string | null;
+  data_fim?: string | null;
+  hora_fim?: string | null;
+  local?: string | null;
+  concluido: boolean;
+  processo_id?: number | null;
+}
+
 export type TipoDocumento = "pdf" | "docx" | "imagem" | "texto" | "pptx";
 
 export interface Documento {

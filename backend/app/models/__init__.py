@@ -11,6 +11,7 @@ from app.models.documento import Documento
 from app.models.financeiro import MovimentoFinanceiro
 from app.models.lead import Lead
 from app.models.peticao import Peticao
+from app.models.portal_acesso import PortalAcesso
 from app.models.processo import Processo
 from app.models.user import User
 
@@ -27,4 +28,5 @@ __all__ = [
     "MovimentoFinanceiro",
     "Lead",
     "Assinatura",
+    "PortalAcesso",
 ]

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Pencil, Plus, Search, Trash2, Users } from "lucide-react";
+import { KeyRound, Pencil, Plus, Search, Trash2, Users } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/alert";
+import { Alert, AlertDescription, Spinner } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +60,8 @@ export default function ClientesPage() {
   const [salvando, setSalvando] = React.useState(false);
   const [editandoId, setEditandoId] = React.useState<number | null>(null);
   const [form, setForm] = React.useState<ClienteForm>(FORM_VAZIO);
+  const [portalMsg, setPortalMsg] = React.useState<string | null>(null);
+  const [portalErro, setPortalErro] = React.useState<string | null>(null);
 
   const carregar = React.useCallback(async (q = "") => {
     const data = await api.get<{ items: Cliente[]; total: number }>("/api/clientes", {
@@ -118,6 +120,21 @@ export default function ClientesPage() {
     carregar(busca);
   };
 
+  const convidarPortal = async (c: Cliente) => {
+    setPortalMsg(null);
+    setPortalErro(null);
+    try {
+      await api.post(`/api/portal/clientes/${c.id}/convite`);
+      setPortalMsg(
+        c.email
+          ? `Convite enviado para ${c.email}. O link vale por 7 dias.`
+          : "Convite registrado, mas o cliente não tem e-mail cadastrado."
+      );
+    } catch (err) {
+      setPortalErro(err instanceof Error ? err.message : "Falha ao enviar convite.");
+    }
+  };
+
   return (
     <>
       <PageHeader title="Clientes" description="Cadastro e gestão dos seus clientes.">
@@ -141,7 +158,22 @@ export default function ClientesPage() {
 
       {loading ? (
         <div className="flex justify-center py-20"><Spinner className="h-6 w-6" /></div>
-      ) : clientes.length === 0 ? (
+      ) : (
+        <>
+          {portalMsg && (
+            <Alert variant="info" className="mb-4">
+              <AlertDescription>{portalMsg}</AlertDescription>
+            </Alert>
+          )}
+          {portalErro && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{portalErro}</AlertDescription>
+            </Alert>
+          )}
+        </>
+      )}
+
+      {!loading && clientes.length === 0 ? (
         <EmptyState
           icon={Users}
           title="Nenhum cliente cadastrado"
@@ -183,6 +215,9 @@ export default function ClientesPage() {
                           <Button variant="ghost" size="iconSm">•••</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => convidarPortal(c)}>
+                            <KeyRound className="h-4 w-4" /> Convidar para o portal
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => abrirEditar(c)}>
                             <Pencil className="h-4 w-4" /> Editar
                           </DropdownMenuItem>
