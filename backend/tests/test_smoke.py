@@ -294,6 +294,64 @@ def test_trial_fluxo(client):
     assert r.json()["plano_atual"] == "trial"
 
 
+def test_ata_crud(client):
+    token = _login(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Cria uma ata manual.
+    r = client.post(
+        "/api/atas",
+        json={
+            "titulo": "Reunião com cliente",
+            "tipo": "reuniao",
+            "data_evento": "2026-08-09",
+            "participantes": "Cliente, Advogado",
+            "conteudo": "## Pauta\n- Discussão do caso.",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201, r.text
+    ata = r.json()
+    ata_id = ata["id"]
+    assert ata["titulo"] == "Reunião com cliente"
+    assert ata["user_id"] >= 1
+
+    # Lista.
+    r = client.get("/api/atas", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["total"] >= 1
+
+    # Edita.
+    r = client.put(
+        f"/api/atas/{ata_id}",
+        json={"conteudo": "## Pauta\n- Editada."},
+        headers=headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["conteudo"] == "## Pauta\n- Editada."
+
+    # Geração via IA sem chave configurada retorna conteúdo com aviso (não quebra).
+    r = client.post(
+        "/api/atas/gerar",
+        json={
+            "titulo": "Ata de audiência",
+            "tipo": "audiencia",
+            "notas": "Audiência de conciliação: proposta de acordo de R$ 10 mil, aceita pela parte.",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201, r.text
+
+    # Exportação em Word.
+    r = client.get(f"/api/atas/{ata_id}/export", params={"formato": "word"}, headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.headers["Content-Type"].startswith("application/vnd.openxmlformats")
+
+    # Exclusão.
+    r = client.delete(f"/api/atas/{ata_id}", headers=headers)
+    assert r.status_code == 200, r.text
+
+
 def _login(client) -> str:
     r = client.post("/api/auth/login", json={"email": "advogado@lexai.com", "senha": "senha-segura-123"})
     assert r.status_code == 200, r.text

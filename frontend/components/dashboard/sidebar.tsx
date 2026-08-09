@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Calendar,
   CalendarClock,
+  ClipboardList,
   CreditCard,
   FileText,
   FolderOpen,
@@ -37,6 +38,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Assistente IA", href: "/assistente", icon: MessageSquareText },
   { label: "Petições", href: "/peticoes", icon: ScrollText },
+  { label: "Atas", href: "/atas", icon: ClipboardList },
   { label: "Jurisprudência", href: "/jurisprudencia", icon: Gavel },
   { label: "Leis", href: "/leis", icon: Newspaper },
   { label: "Contratos", href: "/contratos", icon: FileText },
@@ -117,9 +119,11 @@ function SidebarContent() {
             <p className="truncate text-xs text-white/50">
               {user?.plano === "free"
                 ? "Plano Gratuito"
-                : user?.plano === "empresa"
-                  ? "Plano Empresa"
-                  : "Plano Profissional"}
+                : user?.plano === "trial"
+                  ? "Teste gratuito"
+                  : user?.plano === "empresa"
+                    ? "Plano Empresa"
+                    : "Plano Profissional"}
             </p>
           </div>
           <ShieldCheck className="h-4 w-4 text-gold/70" />

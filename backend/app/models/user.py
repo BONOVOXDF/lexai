@@ -11,6 +11,7 @@ from app.database.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.assinatura import Assinatura
+    from app.models.ata import Ata
     from app.models.cliente import Cliente
     from app.models.conversa import Conversa
     from app.models.documento import Documento
@@ -63,5 +64,8 @@ class User(Base, TimestampMixin):
         back_populates="usuario", cascade="all, delete-orphan"
     )
     intimacoes: Mapped[List["Intimacao"]] = relationship(
+        back_populates="usuario", cascade="all, delete-orphan"
+    )
+    atas: Mapped[List["Ata"]] = relationship(
         back_populates="usuario", cascade="all, delete-orphan"
     )

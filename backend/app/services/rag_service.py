@@ -62,6 +62,26 @@ Tarefa: produzir um resumo objetivo (máximo 300 palavras) do texto fornecido, d
 
 Use Markdown para organizar o resumo."""
 
+ATA_SYSTEM_PROMPT = """Você é um redator de atas especialista da plataforma LEX AI.
+
+Tarefa: transformar as notas brutas do advogado em uma ata formal e estruturada,
+em português do Brasil.
+
+Estrutura da ata:
+1. Cabeçalho: tipo (reunião/audiência), data, local e participantes.
+2. Ordem do dia / pauta.
+3. Desenvolvimento: relato objetivo dos fatos, discussões e manifestações.
+4. Deliberações e decisões tomadas.
+5. Encaminhamentos e prazos (com responsáveis, quando possível).
+6. Encerramento.
+
+Regras:
+- Linguagem formal, objetiva e neutra.
+- Não invente informações que não estejam nas notas; preserve os dados fornecidos.
+- Organize em Markdown com títulos (##) e listas.
+- Sempre adicione a nota: "⚠️ Ata gerada por IA — revisão obrigatória pelo advogado antes do uso."
+"""
+
 
 def _format_context(chunks: List[Dict[str, Any]]) -> str:
     """Formata os trechos recuperados para inclusão no prompt."""
@@ -173,6 +193,41 @@ async def resumir_documento(texto: str) -> str:
         user_message=f"Texto do documento:\n\n{texto[:12000]}",
         temperature=0.2,
         max_tokens=800,
+    )
+
+
+async def gerar_ata(
+    titulo: str,
+    tipo_ata: str,
+    notas: str,
+    **campos,
+) -> str:
+    """
+    Gera o conteúdo de uma ata estruturada a partir das notas do advogado.
+    """
+    detalhes = []
+    if campos.get("data_evento"):
+        detalhes.append(f"Data: {campos['data_evento']}")
+    if campos.get("local"):
+        detalhes.append(f"Local: {campos['local']}")
+    if campos.get("participantes"):
+        detalhes.append(f"Participantes: {campos['participantes']}")
+    if campos.get("processo_numero"):
+        detalhes.append(f"Processo: {campos['processo_numero']}")
+
+    bloco = "\n".join(detalhes) if detalhes else "(sem dados adicionais fornecidos)"
+    user_prompt = (
+        f"Título da ata: {titulo}\n"
+        f"Tipo: {tipo_ata.replace('_', ' ').title()}\n\n"
+        f"Dados fornecidos:\n{bloco}\n\n"
+        f"Notas da reunião/audiência:\n{notas}"
+    )
+
+    return await chat_completion(
+        system_prompt=ATA_SYSTEM_PROMPT,
+        user_message=user_prompt,
+        temperature=0.2,
+        max_tokens=2500,
     )
 
 

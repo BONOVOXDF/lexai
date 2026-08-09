@@ -8,6 +8,7 @@ from app.api.routes import (
     agenda,
     assistente,
     assinatura,
+    atas,
     auth,
     clientes,
     conversas,
@@ -39,6 +40,7 @@ api_router.include_router(documentos.router, prefix="/api")
 api_router.include_router(conversas.router, prefix="/api")
 api_router.include_router(assistente.router, prefix="/api")
 api_router.include_router(peticoes.router, prefix="/api")
+api_router.include_router(atas.router, prefix="/api")
 api_router.include_router(portal.router, prefix="/api")
 api_router.include_router(pesquisa.router, prefix="/api")
 api_router.include_router(agenda.router, prefix="/api")

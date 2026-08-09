@@ -336,3 +336,19 @@ export interface AssinaturaCheckout {
   transaction_amount: number;
   status: string;
 }
+
+export interface Ata {
+  id: number;
+  user_id: number;
+  processo_id?: number | null;
+  titulo: string;
+  tipo: string;
+  data_evento?: string | null;
+  local?: string | null;
+  participantes?: string | null;
+  processo_numero?: string | null;
+  conteudo: string;
+  observacoes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
