@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { BadgeCheck, Check, ShieldCheck } from "lucide-react";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
+import { Countdown } from "@/components/landing/countdown";
 import { cn } from "@/lib/utils";
+
+const WHATSAPP_URL = "https://wa.me/5561995677033?text=" + encodeURIComponent("Olá! Tenho interesse no plano Escritório do LEX AI.");
 
 const PRE_VENDA_FIM = new Date("2026-08-15T23:59:59-03:00");
 
@@ -91,14 +94,17 @@ export function Plans() {
         </Reveal>
 
         {preVenda && (
-          <div className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 px-6 py-4">
-            <span className="rounded-full bg-gold-dark px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-              Pré-venda
-            </span>
-            <p className="text-center text-sm font-medium text-navy dark:text-gold-light">
-              Lançamento com até <strong>50% OFF</strong> nos planos pagos — válido até{" "}
-              <strong>15/08/2026</strong>.
-            </p>
+          <div className="mx-auto mt-8 flex max-w-3xl flex-col items-center gap-3 rounded-2xl border border-gold/40 bg-gold/10 px-6 py-4">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span className="rounded-full bg-gold-dark px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                Pré-venda
+              </span>
+              <p className="text-center text-sm font-medium text-navy dark:text-gold-light">
+                Lançamento com até <strong>50% OFF</strong> nos planos pagos — válido até{" "}
+                <strong>15/08/2026</strong>.
+              </p>
+            </div>
+            <Countdown />
           </div>
         )}
 
@@ -139,6 +145,17 @@ export function Plans() {
                   <span className={cn("text-sm", plan.highlighted ? "text-navy/70" : "text-muted-foreground")}>
                     {plan.period}
                   </span>
+                  {plan.name === "Profissional" && (
+                    <span
+                      className={cn(
+                        "ml-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider",
+                        plan.highlighted ? "bg-navy text-gold-light" : "bg-gold/15 text-gold-dark dark:text-gold-light"
+                      )}
+                    >
+                      <BadgeCheck className="h-3.5 w-3.5" />
+                      14 dias grátis
+                    </span>
+                  )}
                 </div>
 
                 <ul className="mt-8 flex-1 space-y-3">
@@ -157,18 +174,36 @@ export function Plans() {
                   ))}
                 </ul>
 
-                <Link href="/cadastro" className="mt-8">
-                  <Button
-                    variant={plan.highlighted ? "default" : "outline"}
-                    className="w-full"
-                    size="lg"
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
+                {plan.name === "Escritório" ? (
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="mt-8">
+                    <Button variant="outline" className="w-full" size="lg">
+                      {plan.cta}
+                    </Button>
+                  </a>
+                ) : (
+                  <Link href="/cadastro" className="mt-8">
+                    <Button
+                      variant={plan.highlighted ? "default" : "outline"}
+                      className="w-full"
+                      size="lg"
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                )}
               </div>
             </Reveal>
           ))}
+        </div>
+
+        <div className="mx-auto mt-10 flex max-w-3xl flex-col items-center gap-2 text-center">
+          <p className="inline-flex items-center gap-2 text-sm font-medium text-navy dark:text-white/85">
+            <ShieldCheck className="h-4 w-4 text-gold-dark dark:text-gold" />
+            Garantia incondicional de 7 dias: não gostou, devolvemos 100% do valor.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Sem fidelidade · PIX e cartão · Cancele quando quiser
+          </p>
         </div>
       </div>
     </section>

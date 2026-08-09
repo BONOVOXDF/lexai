@@ -1,16 +1,14 @@
 "use client";
 
 import {
-  Bot,
+  BellRing,
   CalendarClock,
-  FileSearch,
+  ClipboardList,
   FileText,
   FolderKanban,
   Landmark,
   MessageSquareText,
-  Scale,
-  Users,
-  Wallet,
+  ShieldCheck,
 } from "lucide-react";
 import { Reveal } from "@/components/reveal";
 import { Card } from "@/components/ui/card";
@@ -20,49 +18,49 @@ const FEATURES = [
     icon: MessageSquareText,
     title: "Assistente IA",
     description:
-      "Converse com uma IA especializada em direito. Respostas em Markdown, com contexto dos seus documentos e fontes citadas.",
+      "Converse com uma IA especializada em direito. Respostas com contexto dos seus documentos e fontes citadas para revisão.",
   },
   {
     icon: FileText,
-    title: "Gerador de Petições",
+    title: "Gerador de Documentos",
     description:
-      "Petição inicial, contestação, agravo, apelação, mandado de segurança, contratos, procurações e pareceres.",
+      "Petição inicial, contestação, apelação, contratos, procurações e pareceres — editáveis e exportáveis em Word ou PDF.",
   },
   {
-    icon: FileSearch,
-    title: "Análise de Documentos",
+    icon: ClipboardList,
+    title: "Atas por IA",
     description:
-      "Upload de PDF, DOCX e imagens com OCR. Resumo automático, indexação vetorial e busca semântica.",
+      "Transforme as notas de audiências e reuniões em atas formais e estruturadas em minutos, prontas para arquivar.",
+  },
+  {
+    icon: BellRing,
+    title: "Alerta de Prazos",
+    description:
+      "Receba por e-mail, todos os dias às 7h, o que vence nos próximos 2 dias — e nunca mais perca um termo.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Kanban de Prazos",
+    description:
+      "Enxergue de uma só vez os prazos atrasados, de hoje, da semana e do mês em um quadro visual de arrastar e soltar.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Portal do Cliente",
+    description:
+      "Convide seus clientes para acompanhar processos e prazos em um portal próprio, com acesso seguro por link.",
   },
   {
     icon: Landmark,
     title: "Jurisprudência e Leis",
     description:
-      "Pesquisa por IA em leis, jurisprudência e súmulas, com filtros por tribunal e órgão.",
-  },
-  {
-    icon: Users,
-    title: "Gestão de Clientes",
-    description:
-      "Cadastro completo com histórico, documentos vinculados, anotações e relacionamento com processos.",
+      "Pesquisa por IA em leis, jurisprudência e súmulas, com filtros por tribunal e órgão para fundamentar seus pedidos.",
   },
   {
     icon: FolderKanban,
-    title: "Processos",
+    title: "Gestão e Intimações",
     description:
-      "Acompanhe número, tribunal, classe, prazos, status e documentos de cada processo em um só lugar.",
-  },
-  {
-    icon: CalendarClock,
-    title: "Agenda Jurídica",
-    description:
-      "Audiências, compromissos e prazos com calendário integrado e alertas de notificação.",
-  },
-  {
-    icon: Wallet,
-    title: "Financeiro",
-    description:
-      "Honorários, receitas, despesas e mensalidades com relatórios e gráficos mensais.",
+      "Clientes, processos, intimações do DJEN e financeiro integrados — sua rotina jurídica inteira em um só lugar.",
   },
 ];
 

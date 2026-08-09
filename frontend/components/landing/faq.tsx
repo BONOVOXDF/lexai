@@ -30,6 +30,22 @@ const FAQS = [
     q: "Como funciona o plano gratuito?",
     a: "O plano Starter é gratuito e inclui 1 usuário, 50 consultas de IA por mês e 10 documentos indexados — ideal para testar a plataforma sem compromisso.",
   },
+  {
+    q: "Como funciona o teste grátis de 14 dias?",
+    a: "Ao se cadastrar, você ativa o teste grátis com acesso completo ao plano Profissional por 14 dias. Não pedimos cartão de crédito. Ao final, você pode assinar com desconto de pré-venda ou continuar no plano gratuito.",
+  },
+  {
+    q: "Como é feito o pagamento?",
+    a: "A assinatura é liberada via PIX (aprovação em minutos) ou cartão de crédito, processados com segurança pelo Mercado Pago. O acesso ao plano é liberado por 30 dias a cada pagamento.",
+  },
+  {
+    q: "O que acontece depois da pré-venda?",
+    a: "Até 15/08/2026 os planos Profissional e Escritório têm 50% de desconto. Depois dessa data, os preços voltam ao valor normal (R$ 97 e R$ 297), mas quem assinar durante a pré-venda mantém o valor promocional na renovação.",
+  },
+  {
+    q: "E se eu não gostar?",
+    a: "Você tem garantia incondicional de 7 dias. Se a plataforma não atender, devolvemos 100% do valor pago — sem perguntas e sem burocracia.",
+  },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {

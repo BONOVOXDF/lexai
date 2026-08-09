@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Github, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { Logo } from "@/components/logo";
 
+const WHATSAPP_URL = "https://wa.me/5561995677033?text=" + encodeURIComponent("Olá! Preciso de suporte no LEX AI.");
+
 const LINKS = {
   Produto: [
     { label: "Recursos", href: "#recursos" },
@@ -19,7 +21,7 @@ const LINKS = {
   ],
   Suporte: [
     { label: "Central de Ajuda", href: "#" },
-    { label: "Contato", href: "#" },
+    { label: "Contato", href: WHATSAPP_URL },
     { label: "Status", href: "#" },
   ],
 };
@@ -56,16 +58,29 @@ export function Footer() {
                 {title}
               </h4>
               <ul className="mt-4 space-y-2.5">
-                {items.map((item) => (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-navy dark:hover:text-white"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+                {items.map((item) =>
+                  item.href.startsWith("http") ? (
+                    <li key={item.label}>
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground transition-colors hover:text-navy dark:hover:text-white"
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ) : (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-navy dark:hover:text-white"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           ))}

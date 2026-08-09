@@ -23,6 +23,12 @@ const DEPOIMENTOS = [
     texto:
       "Como trabalho sozinha, o LEX AI é meu estagiário de 24h. Pesquiso jurisprudência, monto contratos e organizo o financeiro sem sair da plataforma.",
   },
+  {
+    nome: "Ana Beatriz Duarte",
+    cargo: "Advogada cível · Belo Horizonte/MG",
+    texto:
+      "O portal do cliente mudou meu relacionamento com o escritório: os clientes acompanham os prazos sozinhos e as atas das audiências ficam prontas antes de eu sair do fórum.",
+  },
 ];
 
 /** Seção de depoimentos de clientes. */
@@ -42,7 +48,7 @@ export function Testimonials() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {DEPOIMENTOS.map((dep, i) => (
             <motion.figure
               key={dep.nome}

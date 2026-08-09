@@ -6,10 +6,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, PlayCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Countdown } from "@/components/landing/countdown";
+
+const WHATSAPP_URL = "https://wa.me/5561995677033?text=" + encodeURIComponent("Olá! Vim pelo site do LEX AI e gostaria de uma demonstração.");
 
 const HIGHLIGHTS = [
   { icon: Sparkles, text: "Respostas fundamentadas com fontes" },
-  { icon: CheckCircle2, text: "Petições e documentos jurídicos" },
+  { icon: CheckCircle2, text: "Petições, atas e documentos jurídicos" },
   { icon: ShieldCheck, text: "Conformidade LGPD e isolamento de dados" },
 ];
 
@@ -18,7 +21,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden pt-0">
       {/* Imagem em largura total, subindo até o topo */}
-      <div className="relative h-[600px] w-full sm:h-[680px]">
+      <div className="relative h-[620px] w-full sm:h-[700px]">
         <Image
           src="/hero.jpg"
           alt="LEX AI — Inteligência Artificial para Advogados"
@@ -37,10 +40,15 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
+            className="mb-6 flex flex-wrap items-center justify-center gap-3"
           >
-            <Sparkles className="h-4 w-4 text-gold-light" />
-            Inteligência Artificial feita para o Direito
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
+              <Sparkles className="h-4 w-4 text-gold-light" />
+              Inteligência Artificial feita para o Direito
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/90 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy">
+              Até 50% OFF na pré-venda
+            </span>
           </motion.div>
 
           <motion.h1
@@ -58,26 +66,54 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(7,21,40,0.9)]"
           >
-            Pesquisa jurídica, petições, contratos e análise de documentos com IA.
-            Uma plataforma completa para o seu escritório — com fontes, segurança e privacidade.
+            Pesquisa jurídica, petições, atas, controle de prazos e portal do cliente em uma
+            plataforma completa — com fontes, segurança e privacidade.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
             <Link href="/cadastro">
               <Button variant="gold" size="lg" className="w-full sm:w-auto">
-                Começar Agora
+                Começar 14 dias grátis
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
-              <PlayCircle className="h-5 w-5 text-gold-light" />
-              Solicitar Demonstração
-            </Button>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
+                <PlayCircle className="h-5 w-5 text-gold-light" />
+                Solicitar Demonstração
+              </Button>
+            </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-white/90"
+          >
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-gold-light" /> 14 dias grátis
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-gold-light" /> Sem cartão de crédito
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-gold-light" /> Profissional por R$ 47 até 15/08
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-5"
+          >
+            <Countdown />
           </motion.div>
         </div>
       </div>
