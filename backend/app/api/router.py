@@ -19,6 +19,7 @@ from app.api.routes import (
     pesquisa,
     peticoes,
     processos,
+    prazos,
     settings,
     users,
     webhooks,
@@ -31,6 +32,7 @@ api_router.include_router(auth.router, prefix="/api")
 api_router.include_router(users.router, prefix="/api")
 api_router.include_router(clientes.router, prefix="/api")
 api_router.include_router(processos.router, prefix="/api")
+api_router.include_router(prazos.router, prefix="/api")
 api_router.include_router(documentos.router, prefix="/api")
 api_router.include_router(conversas.router, prefix="/api")
 api_router.include_router(assistente.router, prefix="/api")

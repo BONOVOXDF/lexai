@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Calendar,
+  CalendarClock,
   CreditCard,
   FileText,
   FolderOpen,
@@ -40,6 +41,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Contratos", href: "/contratos", icon: FileText },
   { label: "Clientes", href: "/clientes", icon: Users },
   { label: "Processos", href: "/processos", icon: FolderOpen },
+  { label: "Prazos", href: "/prazos", icon: CalendarClock },
   { label: "Agenda", href: "/agenda", icon: Calendar },
   { label: "Documentos", href: "/documentos", icon: FileText },
   { label: "Financeiro", href: "/financeiro", icon: CreditCard },

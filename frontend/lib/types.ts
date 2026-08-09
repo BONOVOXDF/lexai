@@ -68,6 +68,20 @@ export interface Processo {
   updated_at: string;
 }
 
+export interface PrazoKanbanItem {
+  id: number;
+  numero: string;
+  tribunal?: string | null;
+  classe?: string | null;
+  comarca?: string | null;
+  status: StatusProcesso;
+  prazo?: string | null;
+  cliente_id?: number | null;
+  cliente_nome?: string | null;
+}
+
+export type ColunasPrazos = Record<string, PrazoKanbanItem[]>;
+
 export type TipoDocumento = "pdf" | "docx" | "imagem" | "texto" | "pptx";
 
 export interface Documento {
